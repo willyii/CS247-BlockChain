@@ -3,11 +3,10 @@ import hashlib
 import json
 from time import time
 from flask import Flask, jsonify, request
-import cryptography
 from Crypto.PublicKey import RSA
 from Crypto import Random
 
-class node:
+class node(object):
     def __init__(self):
         self.ID = ""
         self.Address = ""

@@ -8,7 +8,7 @@ import block
 import node
 from urllib.parse import urlparse
 
-class blockchain:
+class blockchain(object):
     def __init__(self):
         self.chains = []
         self.nodes = set()
