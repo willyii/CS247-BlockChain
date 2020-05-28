@@ -18,4 +18,4 @@ EXPOSE 80
 ENTRYPOINT ["python"]
 
 # execute the Flask app
-CMD ["app.py"]
+CMD ["blockchain.py"]
