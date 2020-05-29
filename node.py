@@ -14,15 +14,20 @@ class node(object):
         self.priKey = ""
 
     def newNode(self,id,address):
-        random_generator = Random.new().read
-        private_key = RSA.generate(1024,random_generator)
-        public_key = private_key.publickey()
+        keyPair = RSA.generate(2048)
+        pubKey = keyPair.publickey()
+        priKey = keyPair.exportKey()
+
         node = {
             'ID':id,
             'Address':address,
-            'pubKey': public_key,
-            'priKey': private_key
+            'pubKey': pubKey,
+            'priKey': priKey
         }
+        self.ID = id
+        self.Address = address
+        self.priKey = priKey
+        self.pubKey = pubKey 
         return node
 
 
