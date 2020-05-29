@@ -22,14 +22,24 @@ connect nodes between team members.
    > localhost:5000
 2. all required input data are json format
 3.  current tested API
-    1. add new transaction \
+    1. add new transaction 
      > localhost:5000/newtrans 
-    2. add new nodes \
+
+     ![Api1](https://github.com/willyii/CS247-BlockChain/blob/version_1/img/newtrans.png?raw=true)
+
+    2. add new nodes 
       >localhost:5000/addnodes
-    3. get all current nodes \
+
+   ![Api2](https://github.com/willyii/CS247-BlockChain/blob/version_1/img/addnodes.png?raw=true)
+
+    3. get all current nodes 
+   
       >localhost:5000/getallnodes
-    4. initial block with a genesis block \
+
+    4. initial block with a genesis block 
      > localhost:5000/
     
+   ![Api3](https://github.com/willyii/CS247-BlockChain/blob/version_1/img/geneblock.png?raw=true)
+
 
 
