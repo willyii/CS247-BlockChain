@@ -2,20 +2,23 @@
 
 import hashlib
 import json
+from json import JSONEncoder
 from time import time
 from flask import Flask, jsonify, request,Response
 import block
-from node import node
+import node
 import transaction
 from urllib.parse import urlparse
 from uuid import uuid4
 from textwrap import dedent
 
+
 class blockchain(object):
     def __init__(self):
         self.chains = []
-        self.nodes = []
+        self.nodes = {}
         self.currentTrans = []
+        self.nonces  = []
 
     @property
     def last_block(self):
@@ -23,6 +26,15 @@ class blockchain(object):
     @property
     def chain_index(self):
         return len(self.chains) 
+   
+    def nodes_list(self):
+        node = []
+        for i in range(len(self.nodes)):
+            item = self.nodes[str(i+1)].get('Address')
+            node.append(item)
+        #node = json.dumps(node,sort_keys=True)
+        #node = json.loads(node)
+        return node
 
     def genesisBlock(self,numerPrefixZeros):
         # set up a temp block to generate nonce
@@ -35,7 +47,8 @@ class blockchain(object):
         if nonce > 0 :
         # add to blockchain
             self.chains.append(newBlock)
-        return newBlock
+            self.nonces.append(nonce)
+        return newBlock, nonce
 
 
     # add block to chain 
@@ -46,9 +59,8 @@ class blockchain(object):
         self.chain.append(newBlock)
         return newBlock # return a Json data
     
-    def addNode(self,id,address):
+    def addNode(self,address):
         parsed_url = urlparse(address)
-        newNode = node()
         addSuccess  = False
         if parsed_url.netloc:
             address = parsed_url.netloc
@@ -59,8 +71,9 @@ class blockchain(object):
         else:
             raise ValueError('Invalid URL')
         if(addSuccess):
-            newNode = newNode.newNode(id,address)
-            self.nodes.append(newNode)
+            id = len(self.nodes) + 1
+            newNode = node.newNode(id,address)
+            self.nodes[str(id)] = newNode
         return newNode
     
     def addTransaction(self,from_p,to_p,value):
@@ -70,9 +83,10 @@ class blockchain(object):
         return trans
         
     def mineBlock(self,numerPrefixZeros):
-        # We run the proof of work algorithm to get the next proof...
+        # get last block on the chain
         last_block = chain.last_block
-        # proof = chain.proof_of_work(last_block,pubKey,numerPrefixZeros)
+        
+        #proof = chain.proof_of_work(last_block,pubKey,numerPrefixZeros)
 
         # # We must receive a reward for finding the proof.
         # # The sender is "0" to signify that this node has mined a new coin.
@@ -110,14 +124,17 @@ def newChain():
     numerPrefixZeros = int(values['numZero'])
 
     block = chain.genesisBlock(numerPrefixZeros)
+    gene_block = block[0]
+    nonce = block[1]
     print("Currently initial a genesis block, try staring a blockchain by adding some nodes / transactions ")
     response = {
         'message': "Genesis Block Forged",
-        'index': block['blocknum'],
-        'timestampe': block['timestampe'],
-        'transactions': block['transactions'],
-        'prevhash':block['prevhash'],
-        'owner':block['owner']
+        'index': gene_block['blocknum'],
+        'timestampe': gene_block['timestampe'],
+        'transactions': gene_block['transactions'],
+        'prevhash':gene_block['prevhash'],
+        'owner':gene_block['owner'],
+        'nonce':nonce
     }
     #'nonce': block['nonce'],
     return jsonify(response), 200
@@ -139,16 +156,25 @@ def addTransaction():
 @app.route('/addnodes', methods=['POST'])
 def addNodes():
     values = request.get_json()
-    required = ['ID', 'Address']
+    required = ['Address']
     if not all(k in values for k in required):
         return 'Missing values', 400
     
-    node = chain.addNode(values['ID'],values['Address'])
+    node = chain.addNode(values['Address'])
 
     response = {
         'message': f'New nodes have been added{node}'
     }
     return jsonify(response), 201
+
+@app.route('/getallnodes',methods=['GET'])
+def getNodes():
+    node = chain.nodes_list()
+    response = {
+        'nodes':node,
+        'length':len(node)
+    }
+    return jsonify(response), 200
 
 @app.route('/mine', methods=['GET'])
 def mine():
