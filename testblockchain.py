@@ -40,6 +40,8 @@ if __name__ == "__main__":
     currHash = getTestHash(prevHash,guess_nonce)
     # update currenthash in the block
     testblock = Block(prevHash,currHash,testnode.BlockChain.getUnused(),testnode.address,zeros)
+    testblock.nonce = guess_nonce
+    testblock.blockIndex = len(testnode.BlockChain.chain)+1
     print(testblock.tojson())
     print("Block tojson test pass")
     res = testnode.BlockChain.addBlock(testblock)
