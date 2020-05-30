@@ -9,6 +9,8 @@ from block import Block
 from transaction import Transaction
 import hashlib
 
+NUM_TRANS_PER_BLOCK = 5
+
 class BlockChain:
     """
     Initialize the blickchain
@@ -166,5 +168,4 @@ class BlockChain:
             "currHash":self.currHash
         }
         blockchain = json.dumps(blockchain,sort_keys=True)
-        blockchain_str = json.loads(blockchain)
         return blockchain_str
