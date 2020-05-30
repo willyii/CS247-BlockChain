@@ -21,17 +21,37 @@ class Node:
         self.address = address
         self.name = name
         self.miner_indicator = min_ind
-        # self.public_key = "public key" # Test
-        # self.private_key = "private key" #Test
-        self.BlockChain = None # Test
-        self.nodes = {} # Test
+        # self.BlockChain = None # Test
+        # self.nodes = {} # Test
         self.public_key = self.generate_key() 
-        """function generate key of this Node"""
         self.private_key = self.generate_key()
-        # self.BlockChain = self.getChain() """TODO function to get chain from net or generate empty one"""
-        # self.nodes = self.getNodes() """TODO fucntion to get other nodes information in the network"""
+        self.BlockChain = self.getChain() 
+        self.nodes = self.getNodes() 
         # self.WhoIam() """TODO function to broad the self information to other nodes"""
-   
+  
+
+    """
+    Get Nodes infomation from network
+    """
+    def getNodes(self):
+        """TODO Collect node info from other nodes"""
+        nodes = [{self.tojson()}]
+        return nodes 
+        
+
+
+    """
+    Get blockchain info from others
+    """
+    def getChain(self):
+        """TODO Collect info from other nodes"""
+        collected_chain = []
+
+        if not collected_chain:
+            tmp = BlockChain()
+            # caculate the initial block
+            return tmp
+
 
     """
     Generate the key randomly for this node
@@ -147,7 +167,20 @@ class Node:
     """
     Return the describution of this node
     """
-    def tojson(debug = 0):
+    def tojson(self, debug = 0):
         if debug:
-            
-
+            node_info = {
+              "address": self.address,
+              "name": self.name,
+              "miner": self.miner_indicator,
+              "public key": self.public_key,
+              "private key": self.private_key,
+              "BlockChain": self.BlockChain.tojson()
+            }
+        else:
+            node_info = {
+              "address": self.address,
+              "name": self.name,
+              "public key": self.public_key
+            }
+        return json.dumps(node_info, sort_keys = True)

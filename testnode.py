@@ -53,7 +53,7 @@ if __name__ == "__main__":
     testnode = Node(address = "0", name="fuck", min_ind = 0)
     testnode.BlockChain = getTestChain()
     print("testnode info:")
-    print(testnode.tojson())
+    print(testnode.tojson(1))
     print("Initialization test pass")
 
     """
