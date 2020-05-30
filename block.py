@@ -6,7 +6,7 @@ class Block:
     prevhash is the hash of previous block
     currenthash is the hash of this block
     trans is the list of transactions of this block
-    miner is the node who mined out this block
+    miner is the node who mined out this block, use node's address
     zeros is the target that this block was used 
     """
     def __init__(self, prevhash="", currenthash="",trans=[], miner="", zeros = None):

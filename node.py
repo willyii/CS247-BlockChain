@@ -4,6 +4,10 @@ from block import Block
 import json
 import time 
 
+
+NUM_TRANS_PER_BLOKC = 5
+
+
 """
 Initialize the node.
 address: address of this node
@@ -12,6 +16,7 @@ min_ind: if this node a miner or not. default 0
 """
 class Node:
     def __init__(self, address="", name="", min_ind = 0):
+        self.transreviced = [] # Transactions reviced from other nodes but not added to the blockchian, use trans in here to mine 
         self.address = address
         self.name = name
         self.miner_indicator = min_ind
@@ -28,6 +33,8 @@ class Node:
 
     """
     sendCoin to "to" with value coins
+    to: address of the node I will send money to 
+    value: amount of coin I will send
     """
     def sendCoin(self, to="", value=0):
 
@@ -68,9 +75,21 @@ class Node:
 
     """
     Process the transaction reviced from others
+    trans: transaction recived from other node
     """
-    def handleTransaction(self):
-        pass
+    def handleTransaction(self, trans):
+        """TODO handle the sinagture of the sender"""
+        
+        signcheck = True
+        if not signcheck:# failed in singature check
+          return None
+        
+        self.transreviced.append(trans) # if pass the check, add it to recived
+        if self.miner_indicator:
+            # This is miner, mine
+            self.mine()
+
+        return True
 
 
     """
