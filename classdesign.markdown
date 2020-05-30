@@ -23,7 +23,7 @@
 - chain
 - unused
 - owner
-- prevHash
+- currHash
 
 #### Methods
 addBlock
