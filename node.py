@@ -4,6 +4,10 @@ from block import Block
 import json
 import time 
 
+
+NUM_TRANS_PER_BLOKC = 5
+
+
 """
 Initialize the node.
 address: address of this node

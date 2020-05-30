@@ -16,10 +16,10 @@ if __name__ == "__main__":
 
     testnode = Node(address = "0", name="fuck", min_ind = 0)
     testnode.BlockChain = getTestChain()
-    print(testnode.BlockChain.tojson())
+    print(type(testnode.BlockChain.tojson()))
     print("Block Chain tojson test pass")
 
 
     send = testnode.sendCoin("1", 7)
-    print(send.tojson())
+    print(type(send.tojson()))
     print("Send Coint tojson test pass")
