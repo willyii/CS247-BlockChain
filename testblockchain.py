@@ -48,8 +48,8 @@ if __name__ == "__main__":
     print(res.tojson())
     print("Block add to chain test pass")
 
-
-
+    print(testnode.BlockChain.chain)
+    print("Return current chain list pass")
 
     send = testnode.sendCoin("1", 7)
     print(send.tojson())

@@ -22,6 +22,8 @@ class BlockChain:
         self.chain = [] 
         self.unused = [] 
         self.currHash = 0 
+        # a gloabl value for storing hash value
+        self.NextHash = 0
 
     
     """
@@ -45,8 +47,6 @@ class BlockChain:
     #class ValidationError(Exception):
     #    pass
     
-    # a gloabl value for storing hash value
-    NextHash = 0
 
     def validation(self,block):
         status = 0
@@ -62,12 +62,12 @@ class BlockChain:
         checkHash = checkBlock.currHash
         print(checkHash)
         # get encode string format of block object
-        checkEncode = checkBlock.tojson().encode('utf-8')
+        prevBlockHash = checkBlock.tojson().encode('utf-8')
         if checkBlock.blockIndex == 1:
-            checkEncode = str(0).encode('utf-8')
+            prevBlockHash = str(0).encode('utf-8')
         # return sha256 value
-        NextHash = self.hash_sha256(checkEncode + str(checkNonce).encode('utf-8'))
-        if(NextHash == checkHash):
+        self.NextHash = self.hash_sha256(prevBlockHash + str(checkNonce).encode('utf-8'))
+        if(self.NextHash == checkHash):
             status = 1
         else:
             status = 0
@@ -105,10 +105,10 @@ class BlockChain:
                 for o in item.output:
                     self.unused.append(item)
                 
-            # update hash
-            NextHash = checkBlock.currHash
             # update block confirmed value
             checkBlock.confirmed = True
+            # update hash
+            self.currHash = self.NextHash
             # add to chain
             self.chain.append(block)
 
