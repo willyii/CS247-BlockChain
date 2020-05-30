@@ -38,7 +38,6 @@ addBlock
 - confirmed
 - nonce
 - miner
-- timestamp
 
 ### Transaction
 #### properties
