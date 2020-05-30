@@ -1,5 +1,4 @@
-
-
+import json
 
 class Block:
     """
@@ -19,3 +18,18 @@ class Block:
         self.miner = miner
         self.zeros = zeros
         self.nonce = None """ the nonce of this block"""    
+
+    def tojson(self):
+        block = {
+            "blockIndex":self.blockIndex,
+            "currentHash": self.currHash,
+            "prevHash": self.prevHash,
+            "transactions": self.transactions,
+            "confirmed": self.confirmed,
+            "miner": self.miner,
+            "zeors": self.zeros,
+            "nonce": self.nonce
+        }
+        block = json.dumps(block, sort_keys=True)
+        block_str = json.loads(block)
+        return block_str
