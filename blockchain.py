@@ -42,8 +42,8 @@ class BlockChain:
     input: block need to be checked 
     return: validation or not
     """
-    class ValidationError(Exception):
-        pass
+    #class ValidationError(Exception):
+    #    pass
     
     # a gloabl value for storing hash value
     NextHash = 0
@@ -55,7 +55,7 @@ class BlockChain:
         if checkBlock.blockIndex >= len(self.chain):
             # this block is in the future
             status = False
-            raise ValidationError(" This Block is in the future")
+            raise Exception(" This Block is in the future")
             return status
         # 1. check nonce is satisfied with proof
         checnNonce = checkBlock.nonce
@@ -68,10 +68,10 @@ class BlockChain:
             status = True
         else:
             status = False
-            raise ValidationError(" This Block has HASH error")
+            raise Exception(" This Block has HASH error")
         # 2. TODO check signature of all transactions in the block
         # 3. TODO check signature of the Block
-        return status
+        return status == True
     
     """
     function for adding a comfirmed block to crrent chain
@@ -84,16 +84,18 @@ class BlockChain:
         # if blockchain contains the block
         # duplication
         if checkBlock in self.unused:
-            raise ValidationError(" input block is a duplicated block")
-
-        if(validation): # if the block is valid
+            raise Exception(" input block is a duplicated block")
+            return checkBlock
+    
+        if validation(checkBlock) is True: # if the block is valid
             trans = Transaction()
             trans = checkBlock.transactions
             # remove input transactions out of unused list
             for item in trans.input:   
                 exists = self.unused.remove(item)
                 if(exists == False): # input trans does not exists
-                    raise ValidationError(" input transaction may not exists")
+                    raise Exception(" input transaction may not exists")
+                    return checkBlock
 
             # add output transactions in the unused list
             for item in trans.output:
@@ -148,7 +150,7 @@ class BlockChain:
     return: last block's hash
     """
     def getCurrHash(self):
-        return self.prevHash
+        return self.currHash
 
     """
     convert input class object into Json string
