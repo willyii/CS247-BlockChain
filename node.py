@@ -19,5 +19,8 @@ class Node:
         self.BlockChain = self.getChain() """TODO function to get chain from net or generate empty one"""
         self.nodes = self.getNodes() """TODO fucntion to get other nodes information in the network"""
         self.WhoIam() """TODO function to broad the self information to other nodes"""
+        
+    def mine():
+        pass
 
         
