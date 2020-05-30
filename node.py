@@ -4,6 +4,7 @@ from block import Block
 import json
 import time 
 import hashlib
+import re
 
 
 NUM_TRANS_PER_BLOKC = 5
@@ -105,7 +106,7 @@ class Node:
 
     """
     Process the transaction reviced from others
-    trans: transaction recived from other node
+    trans: transaction recived from other node: recived from others need to be parse
     """
     def handleTransaction(self, trans):
         """TODO handle the sinagture of the sender"""
@@ -114,17 +115,21 @@ class Node:
         if not signcheck:# failed in singature check
             return None
         
+        # pharse the string 
+        
+        trans = trans.strip("\\")
+        trans = json.loads(trans)
         self.transreviced.append(trans) # if pass the check, add it to recived
         if self.miner_indicator:
             # This is miner, mine
             self.mine()
-
+        print("trans in handleTransaction:", trans)
         return True
 
 
     """
     Process the Block recived from others
-    new_block: block send from others
+    new_block: block send from others, "str" type need to be pharse
     """
     def handleBlock(self, new_block):
         """TODO hanle the signature of the sender"""

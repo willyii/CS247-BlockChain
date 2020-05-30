@@ -3,6 +3,7 @@ from transaction import Transaction
 from blockchain import BlockChain
 from node import Node
 import hashlib
+import json
 
 
 def getTestChain():
@@ -68,7 +69,7 @@ if __name__ == "__main__":
     """
     test_trans = Transaction("master","0",header="test3", value = 7)
     print("Before handle trans: ", testnode.transreviced)
-    testnode.handleTransaction(test_trans)
+    testnode.handleTransaction(send.tojson())
     print("After handle trans: ", testnode.transreviced)
     print("HanleTransaction Test Pass")
 
@@ -78,4 +79,4 @@ if __name__ == "__main__":
     testblock = getTestBlock(testnode)
     if testnode.handleBlock(testblock):
         print("HandleBlock Test Pass")
-    
+    print(json.loads(send.tojson()))
