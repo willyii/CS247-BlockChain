@@ -34,3 +34,11 @@ if __name__ == "__main__":
     testnode.handleTransaction(test_trans)
     print("After handle trans: ", testnode.transreviced)
     print("HanleTransaction Test Pass")
+
+    """
+    HanleBlock Test
+    """
+    testblock = Block()
+    if testnode.handleBlock(testblock):
+        print("HandleBlock Test Pass")
+    
