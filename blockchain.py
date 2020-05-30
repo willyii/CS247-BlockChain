@@ -42,36 +42,40 @@ class BlockChain:
     input: block need to be checked 
     return: validation or not
     """
-    class ValidationError(Exception):
-        pass
+    #class ValidationError(Exception):
+    #    pass
     
     # a gloabl value for storing hash value
     NextHash = 0
 
     def validation(self,block):
-        status = False
-        checkBlock = Block()
+        status = 0
+        #checkBlock = Block()
         checkBlock = block
-        if checkBlock.blockIndex >= len(self.chain):
+        if checkBlock.blockIndex >= len(self.chain)+2:
             # this block is in the future
-            status = False
-            raise ValidationError(" This Block is in the future")
+            status = 0
+            raise Exception(" This Block is in the future")
             return status
         # 1. check nonce is satisfied with proof
-        checnNonce = checkBlock.nonce
-        checkHash = checkBlock.prevHash
+        checkNonce = checkBlock.nonce
+        checkHash = checkBlock.currHash
+        print(checkHash)
         # get encode string format of block object
-        checkEncode = toEncode(checkBlock)
+        checkEncode = checkBlock.tojson().encode('utf-8')
+        if checkBlock.blockIndex == 1:
+            checkEncode = str(0).encode('utf-8')
         # return sha256 value
-        NextHash = hash_sha256(checkEncode + str(checnNonce).encode('utf-8'))
+        NextHash = self.hash_sha256(checkEncode + str(checkNonce).encode('utf-8'))
         if(NextHash == checkHash):
-            status = True
+            status = 1
         else:
-            status = False
-            raise ValidationError(" This Block has HASH error")
-        # 2. TODO check signature of all transactions in the block
-        # 3. TODO check signature of the Block
-        return status
+            status = 0
+            raise Exception(" This Block has HASH error")
+            return status
+        # 2. TO DO check signature of all transactions in the block
+        # 3. TO DO check signature of the Block
+        return status 
     
     """
     function for adding a comfirmed block to crrent chain
@@ -79,27 +83,31 @@ class BlockChain:
     return: latest vlaid block 
     """
     def addBlock(self,block):
-        checkBlock = Block()
+        #checkBlock = Block()
         checkBlock = block
         # if blockchain contains the block
         # duplication
         if checkBlock in self.unused:
-            raise ValidationError(" input block is a duplicated block")
-
-        if(validation): # if the block is valid
-            trans = Transaction()
+            raise Exception(" input block is a duplicated block")
+            return checkBlock
+    
+        if self.validation(checkBlock) == 1: # if the block is valid
             trans = checkBlock.transactions
-            # remove input transactions out of unused list
-            for item in trans.input:   
-                exists = self.unused.remove(item)
-                if(exists == False): # input trans does not exists
-                    raise ValidationError(" input transaction may not exists")
+           # find out all trans corrsponding to input 
+           # remove input transactions out of unused list
+            for item in trans:
+                for t in item.input:
+                    exists = self.unused.remove(item)
+                    if(exists == False): # input trans does not exists
+                        raise Exception(" input transaction may not exists")
+                        return checkBlock
 
             # add output transactions in the unused list
-            for item in trans.output:
-                self.unused.append(item)
+            for item in trans:
+                for o in item.output:
+                    self.unused.append(item)
             # update hash
-            updateHashVal(NextHash)
+            NextHash = checkBlock.currHash
             # update block confirmed value
             checkBlock.confirmed = True
             # add to chain
@@ -116,15 +124,6 @@ class BlockChain:
         self.unused.append(trans)
         return self.unused
 
-    """
-    function for updating current hash
-    when a new block added onto chain, update hash value
-    input: current hash value
-    return: new current hash value
-    """
-    def updateHashVal(self,hashVal):
-        self.currHash = hashVal
-        return self.currHash
 
     """
     function for getting whole blockchain
@@ -148,15 +147,8 @@ class BlockChain:
     return: last block's hash
     """
     def getCurrHash(self):
-        return self.prevHash
+        return self.currHash
 
-    """
-    convert input class object into Json string
-    inorder to encode with hash function
-    """
-    def toEncode(self,obj):
-        obj = json.dumps(obj,sort_keys=True).encode('utf-8')
-        return obj
     
     """
     convert blockchain information into json format
