@@ -13,13 +13,24 @@ def getTestChain():
     return testblock 
 
 if __name__ == "__main__":
-
+    """
+    Initialize testnode
+    """
     testnode = Node(address = "0", name="fuck", min_ind = 0)
     testnode.BlockChain = getTestChain()
-    print(type(testnode.BlockChain.tojson()))
-    print("Block Chain tojson test pass")
 
-
+    """
+    Send Coint Test
+    """
     send = testnode.sendCoin("1", 7)
     print(type(send.tojson()))
     print("Send Coint tojson test pass")
+
+    """
+    HandleTransaction Test 
+    """
+    test_trans = Transaction("master","0",header="test3", value = 7)
+    print("Before handle trans: ", testnode.transreviced)
+    testnode.handleTransaction(test_trans)
+    print("After handle trans: ", testnode.transreviced)
+    print("HanleTransaction Test Pass")
