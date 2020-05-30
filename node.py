@@ -82,7 +82,7 @@ class Node:
         
         signcheck = True
         if not signcheck:# failed in singature check
-          return None
+            return None
         
         self.transreviced.append(trans) # if pass the check, add it to recived
         if self.miner_indicator:
@@ -93,16 +93,23 @@ class Node:
 
 
     """
+    Process the Block recived from others
+    new_block: block send from others
+    """
+    def handleBlock(self, new_block):
+        """TODO hanle the signature of the sender"""
+        signcheck = True
+        if not signcheck:
+            return None
+
+        self.BlockChain.addBlock(new_block)
+        return True
+
+
+    """
     When revice the measage from others add new node to self
     """
     def addNode(self):
-        pass
-
-
-    """
-    Process the Block recived from others
-    """
-    def handleBlock(self):
         pass
 
 
