@@ -3,6 +3,7 @@ from transaction import Transaction
 from block import Block
 import json
 import time 
+import hashlib
 
 
 NUM_TRANS_PER_BLOKC = 5
@@ -20,16 +21,25 @@ class Node:
         self.address = address
         self.name = name
         self.miner_indicator = min_ind
-        self.public_key = "public key" # Test
-        self.private_key = "private key" #Test
+        # self.public_key = "public key" # Test
+        # self.private_key = "private key" #Test
         self.BlockChain = None # Test
         self.nodes = {} # Test
-        # self.public_key = self.generate_key() """TODO function generate key of this Node"""
-        # self.private_key = self.generate_key()
+        self.public_key = self.generate_key() 
+        """function generate key of this Node"""
+        self.private_key = self.generate_key()
         # self.BlockChain = self.getChain() """TODO function to get chain from net or generate empty one"""
         # self.nodes = self.getNodes() """TODO fucntion to get other nodes information in the network"""
         # self.WhoIam() """TODO function to broad the self information to other nodes"""
-    
+   
+
+    """
+    Generate the key randomly for this node
+    """
+    def generate_key(self):
+        return hashlib.sha256(str(time.time()).encode("utf-8")).hexdigest()
+
+
 
     """
     sendCoin to "to" with value coins
@@ -134,4 +144,10 @@ class Node:
         pass
 
     
+    """
+    Return the describution of this node
+    """
+    def tojson(debug = 0):
+        if debug:
+            
 
