@@ -14,5 +14,6 @@
   - mine function in node: Zeyu
   - Others: Xinlong
 - ***TODO***:
+  - Test.py for each function
   - Web module
   - Communication between nodes
