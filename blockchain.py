@@ -168,4 +168,4 @@ class BlockChain:
             "currHash":self.currHash
         }
         blockchain = json.dumps(blockchain,sort_keys=True)
-        return blockchain_str
+        return blockchain
