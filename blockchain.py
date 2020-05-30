@@ -8,7 +8,7 @@ store all confirmed blocks
 class blockchain(object):
     self.chain = [] # blockchain
     self.unused = [] # unused transaction list
-    self.currHash = 0 # previous block's hash
+    self.currHash = 0 # curr last block's hash
 
 
     """
@@ -31,6 +31,7 @@ class blockchain(object):
 
     """
     function for updating current hash
+    when a new block added onto chain, update hash value
     input: current hash value
     return: new current hash value
     """
