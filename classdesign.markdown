@@ -21,7 +21,7 @@
 - chain
 - unused
 - owner
-- latestHash
+- prevHash
 
 #### Methods
 addBlock
