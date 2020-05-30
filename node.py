@@ -108,22 +108,18 @@ class Node:
     Process the transaction reviced from others
     trans: transaction recived from other node: recived from others need to be parse
     """
-    def handleTransaction(self, trans):
-        """TODO handle the sinagture of the sender"""
-        
-        signcheck = True
-        if not signcheck:# failed in singature check
-            return None
-        
-        # pharse the string 
-        
-        trans = trans.strip("\\")
-        trans = json.loads(trans)
+    def handleTransaction(self, trans_str):
+        # pharse the trans_str 
+        trans = Transaction()
+        trans.parseJson(trans_str)
         self.transreviced.append(trans) # if pass the check, add it to recived
+
+        """TODO handle the sinagture of the sender""" 
+ 
         if self.miner_indicator:
             # This is miner, mine
-            self.mine()
-        print("trans in handleTransaction:", trans)
+            self.mine() 
+
         return True
 
 
@@ -131,12 +127,13 @@ class Node:
     Process the Block recived from others
     new_block: block send from others, "str" type need to be pharse
     """
-    def handleBlock(self, new_block):
-        """TODO hanle the signature of the sender"""
-        signcheck = True
-        if not signcheck:
-            return None
+    def handleBlock(self, block_str):
+        
+        # parse the block_str
 
+        """TODO hanle the signature of the sender"""
+        new_block = Block()
+        new_block.parseJson(block_str)
         self.BlockChain.addBlock(new_block)
         return True
 

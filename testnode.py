@@ -77,6 +77,5 @@ if __name__ == "__main__":
     HanleBlock Test
     """
     testblock = getTestBlock(testnode)
-    if testnode.handleBlock(testblock):
+    if testnode.handleBlock(testblock.tojson()):
         print("HandleBlock Test Pass")
-    print(json.loads(send.tojson()))

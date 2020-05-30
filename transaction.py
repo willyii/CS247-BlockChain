@@ -38,4 +38,25 @@ class Transaction:
         return transaction
 
         
-       
+    """
+    parse the str data to transaction format
+    """ 
+    def parseJson(self, input_str):
+        tmp = json.loads(input_str)
+
+        self.f = tmp["from"]
+        self.to = tmp["to"]
+        self.header = tmp["header"]
+        self.value = tmp["value"]
+        self.timestamp = tmp["timestamp"]
+        self.input = []
+        for t in tmp["input"]:
+            tmp_t = Transaction()
+            tmp_t.parseJson(t)
+            self.input.append(tmp_t)
+
+        self.output = []
+        for t in tmp["output"]:
+            tmp_t = Transaction()
+            tmp_t.parseJson(t)
+            self.output.append(tmp_t)

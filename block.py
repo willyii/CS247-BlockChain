@@ -1,4 +1,5 @@
 import json
+from transaction import Transaction
 
 class Block:
     """
@@ -30,8 +31,28 @@ class Block:
             "transactions": [x.tojson() for x in self.transactions],
             "confirmed": self.confirmed,
             "miner": self.miner,
-            "zeors": self.zeros,
+            "zeros": self.zeros,
             "nonce": self.nonce
         }
         block_str = json.dumps(block, sort_keys=True)
         return block_str
+
+
+    """
+    parse the str data to Block
+    """ 
+    def parseJson(self, input_str):
+        tmp = json.loads(input_str)
+
+        self.blockIndex = tmp["blockIndex"]
+        self.currHash = tmp["currentHash"]
+        self.prevHash = tmp["prevHash"]
+        self.miner = tmp["miner"]
+        self.zeros = tmp["zeros"]
+        self.nonce = tmp["nonce"]
+
+        self.transactions = []
+        for t in tmp["transactions"]:
+            tmp_t = Transaction()
+            tmp_t.parseJson(t)
+            self.transactions.append(tmp_t)
