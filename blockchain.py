@@ -4,6 +4,7 @@ BlockChain class
 Implementation of a blockchain
 store all confirmed blocks
 """
+import json
 
 class blockchain:
     """
@@ -68,3 +69,16 @@ class blockchain:
     """
     def getCurrHash(self):
         return self.prevHash
+    
+    """
+    convert blockchain information into json format
+    """
+    def tojson(self):
+        blockchain = {
+            "chain":self.chain,
+            "unused":self.unused,
+            "currHash":self.currHash
+        }
+        blockchain = json.dumps(blockchain,sort_keys=True)
+        blockchain_str = json.loads(blockchain)
+        return blockchain_str
