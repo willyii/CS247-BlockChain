@@ -1,3 +1,8 @@
+from blockchain import BlockChain
+from transaction import Transaction
+from block import Block
+
+
 """
 Initialize the node.
 address: address of this node

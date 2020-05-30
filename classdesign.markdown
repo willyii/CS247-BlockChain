@@ -37,6 +37,7 @@ addBlock
 - transactions
 - confirmed
 - nonce
+- zeros
 - miner
 
 ### Transaction
