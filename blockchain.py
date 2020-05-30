@@ -5,7 +5,7 @@ Implementation of a blockchain
 store all confirmed blocks
 """
 
-class blockchain():
+class blockchain:
     """
     Initialize the blickchain
     chain is the blockchain 
