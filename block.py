@@ -2,7 +2,6 @@
 
 
 class Block:
-
     """
     Initialize the block, 
     prevhash is the hash of previous block
