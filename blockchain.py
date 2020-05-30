@@ -5,11 +5,17 @@ Implementation of a blockchain
 store all confirmed blocks
 """
 
-class blockchain(object):
-    self.chain = [] # blockchain
-    self.unused = [] # unused transaction list
-    self.currHash = 0 # curr last block's hash
-
+class blockchain():
+    """
+    Initialize the blickchain
+    chain is the blockchain 
+    unused is a lost of all unsed/confirmed transactions
+    currHash is the hash value of last block on the chain
+    """
+    def __init__(self):
+        self.chain = [] 
+        self.unused = [] 
+        self.currHash = 0 
 
     """
     function for adding a comfirmed block to crrent chain
