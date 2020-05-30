@@ -13,7 +13,9 @@
 - handleTransaction
 - handleBlock
 - mine
-
+- addNode
+- broadcastTrans
+- broadcastBlock
 
 
 ### BlockChain
@@ -21,21 +23,25 @@
 - chain
 - unused
 - owner
-- latestHash
+- prevHash
 
 #### Methods
 addBlock
 
 
 ### Block
-- hash
-- prev
+#### properties
+- blockIndex
+- currHash
+- prevHash
 - transactions
 - confirmed
 - nonce
-- from
+- miner
+- timestamp
 
 ### Transaction
+#### properties
 - from
 - to
 - input
@@ -43,3 +49,4 @@ addBlock
 - header
 - signature
 - value
+- timestamp
