@@ -6,7 +6,7 @@ store all confirmed blocks
 """
 import json
 
-class Blockchain:
+class BlockChain:
     """
     Initialize the blickchain
     chain is the blockchain 
