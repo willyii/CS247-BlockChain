@@ -87,7 +87,7 @@ class BlockChain:
         checkBlock = block
         # if blockchain contains the block
         # duplication
-        if checkBlock in self.unused:
+        if checkBlock in self.chain:
             raise Exception(" input block is a duplicated block")
             return checkBlock
     
@@ -101,11 +101,10 @@ class BlockChain:
                     if(exists == False): # input trans does not exists
                         raise Exception(" input transaction may not exists")
                         return checkBlock
-
-            # add output transactions in the unused list
-            for item in trans:
+                # add output transactions in the unused list
                 for o in item.output:
                     self.unused.append(item)
+                
             # update hash
             NextHash = checkBlock.currHash
             # update block confirmed value
