@@ -5,6 +5,9 @@ Implementation of a blockchain
 store all confirmed blocks
 """
 import json
+from block import Block
+from transaction import Transaction
+import hashlib
 
 class BlockChain:
     """
@@ -18,14 +21,89 @@ class BlockChain:
         self.unused = [] 
         self.currHash = 0 
 
+    
+    """
+    function for calculate sha256 
+    input: block as string format which need to be checked 
+    return: sha256 value
+    """
+    def hash_sha256(self,block_string):
+        # hash block
+        # from json to dictionary, sort by key
+        #block_string = json.dumps(block,sort_keys=True).encode('utf-8')
+        hashcode = hashlib.sha256(block_string).hexdigest()
+        return hashcode
+    
+    """
+    function for check validation of the block
+    which requesting for adding to current chain
+    input: block need to be checked 
+    return: validation or not
+    """
+    class ValidationError(Exception):
+        pass
+    
+    # a gloabl value for storing hash value
+    NextHash = 0
+
+    def validation(self,block):
+        status = False
+        checkBlock = Block()
+        checkBlock = block
+        if checkBlock.blockIndex >= len(self.chain):
+            # this block is in the future
+            status = False
+            raise ValidationError(" This Block is in the future")
+            return status
+        # 1. check nonce is satisfied with proof
+        checnNonce = checkBlock.nonce
+        checkHash = checkBlock.prevHash
+        # get encode string format of block object
+        checkEncode = toEncode(checkBlock)
+        # return sha256 value
+        NextHash = hash_sha256(checkEncode + str(checnNonce).encode('utf-8'))
+        if(NextHash == checkHash):
+            status = True
+        else:
+            status = False
+            raise ValidationError(" This Block has HASH error")
+        # 2. TODO check signature of all transactions in the block
+        # 3. TODO check signature of the Block
+        return status
+    
     """
     function for adding a comfirmed block to crrent chain
     input: Block obejct
-    return: current blockchain 
+    return: latest vlaid block 
     """
     def addBlock(self,block):
-        self.chain.append(block)
-        return self.chain
+        checkBlock = Block()
+        checkBlock = block
+        # if blockchain contains the block
+        # duplication
+        if checkBlock in self.unused:
+            raise ValidationError(" input block is a duplicated block")
+
+        if(validation): # if the block is valid
+            trans = Transaction()
+            trans = checkBlock.transactions
+            # remove input transactions out of unused list
+            for item in trans.input:   
+                exists = self.unused.remove(item)
+                if(exists == False): # input trans does not exists
+                    raise ValidationError(" input transaction may not exists")
+
+            # add output transactions in the unused list
+            for item in trans.output:
+                self.unused.append(item)
+            # update hash
+            updateHashVal(NextHash)
+            # update block confirmed value
+            checkBlock.confirmed = True
+            # add to chain
+            self.chain.append(block)
+
+        return checkBlock
 
     """
     function for adding new unused transactions
@@ -69,6 +147,14 @@ class BlockChain:
     """
     def getCurrHash(self):
         return self.prevHash
+
+    """
+    convert input class object into Json string
+    inorder to encode with hash function
+    """
+    def toEncode(self,obj):
+        obj = json.dumps(obj,sort_keys=True).encode('utf-8')
+        return obj
     
     """
     convert blockchain information into json format
