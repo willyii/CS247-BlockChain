@@ -17,19 +17,21 @@ class Block:
         self.confirmed = False 
         self.miner = miner
         self.zeros = zeros
-        self.nonce = None """ the nonce of this block"""    
-
+        self.nonce = None 
+    
+    """
+    Return the descirbtion of this block in json format
+    """
     def tojson(self):
         block = {
             "blockIndex":self.blockIndex,
             "currentHash": self.currHash,
             "prevHash": self.prevHash,
-            "transactions": self.transactions,
+            "transactions": [x.tojson() for x in self.transactions],
             "confirmed": self.confirmed,
             "miner": self.miner,
             "zeors": self.zeros,
             "nonce": self.nonce
         }
-        block = json.dumps(block, sort_keys=True)
-        block_str = json.loads(block)
+        block_str = json.dumps(block, sort_keys=True)
         return block_str

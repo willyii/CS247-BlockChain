@@ -161,8 +161,8 @@ class BlockChain:
     """
     def tojson(self):
         blockchain = {
-            "chain":self.chain,
-            "unused":self.unused,
+            "chain":[x.tojson() for x in self.chain],
+            "unused":[x.tojson() for x in self.unused],
             "currHash":self.currHash
         }
         blockchain = json.dumps(blockchain,sort_keys=True)
