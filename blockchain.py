@@ -36,9 +36,6 @@ class BlockChain:
         # generate a genesisiblock
         # index:1,  prevHash: 0
         # with one output transaction
-        genesis_block = Block()
-        genesis_block.prevHash = 0
-        genesis_block.blockIndex = 1
 
         # generate output transaction
         outputs = Transaction()
@@ -47,11 +44,17 @@ class BlockChain:
         outputs.value = 50
         outputs.header = " Genesis Block reward for firstNode"
 
-        # add to unused list 
-        self.unused.append(outputs)
+        # genesis transfer
+        aggregateTrans = Transaction("master",firstNodeAddress,[],[],"Genesis Block transaction",0)
+        aggregateTrans.output.append(outputs)
+
+        genesis_block = Block()
+        genesis_block.prevHash = 0
+        genesis_block.blockIndex = 1
+        genesis_block.transactions = [aggregateTrans]
+
         # calculate getNext hash
-        nextHash = tool.getNextHash(0,self.unused)
-        genesis_block.currHash = nextHash
+        genesis_block.currHash = tool.getNextHash(genesis_block.prevHash,genesis_block.transactions)
         genesis_block.confirmed = True
         
         return genesis_block
@@ -63,6 +66,15 @@ class BlockChain:
     return: latest valid block 
     """
     def addBlock(self,block):
+
+        # ADD genesis block
+        if not self.chain:
+            self.chain.append(block)
+            self.currentHash = block.currentHash
+            for o in block.transactions[0].output:
+                self.unused.append(o)
+            return True
+
         # if complete proofofwork, add to blockchain
         success = False
         checkBlock = block
@@ -88,7 +100,7 @@ class BlockChain:
             # add output transactions in the unused list
             for o in item.output:
                 self.unused.append(item)
-
+            
         # add block to chain
         self.chain.append(block)
         # update currenthash
