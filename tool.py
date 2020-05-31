@@ -27,7 +27,7 @@ def checkValid(hashval,zeros):
 check the proof-of-work of a block 
 which want to add to blockchain
 """
-def proof_of_work(incomeBlock):
+def valid_proof_of_work(incomeBlock):
     completed = False
     # do proof of work
     checkZero = incomeBlock.zeros

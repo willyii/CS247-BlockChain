@@ -151,7 +151,7 @@ class Node:
         new_block.parseJson(block_str)
 
         if new_block.confirmed:# if confirmed by someone, check and add block
-            if proof_of_work(new_block):
+            if valid_proof_of_work(new_block):
                 self.BlockChain.addBlock(new_block) 
                 """TODO stop the mine thread"""
             else:
@@ -190,7 +190,7 @@ class Node:
     If this node is a miner, it should always calling this function to mine new block 
     """
     def mine(self, block):
-        nonce = proof_of_work(self, blcok.currHash, block.zeros)
+        nonce = blockchain.proof_of_work(self, blcok.currHash, block.zeros)
 
         if nonce < 0:
             return
