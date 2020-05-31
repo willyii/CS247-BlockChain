@@ -10,6 +10,11 @@ from block import Block
 from blockchain import BlockChain
 from transaction import Transaction
 
+"""
+hasval, is the hash256 calculate by node who do proof-of-work
+zeros, is number of prefix zeros 
+compare if hashval satisify thet has correct number of prefix zeros
+"""
 def checkValid(hashval,zeros):
     zeroString = []
     for i in range(zeros):
@@ -17,6 +22,10 @@ def checkValid(hashval,zeros):
     zeroString  = ''.join(zeroString)
     return hashval[:zeros] == zeroString
 
+"""
+check the proof-of-work of a block 
+which want to add to blockchain
+"""
 def proof_of_work(incomeBlock):
     completed = False
     if(incomeBlock.confirmed is True):
@@ -38,6 +47,10 @@ def proof_of_work(incomeBlock):
 
     return completed
 
+"""
+combine previous hash and current transactions
+calculate hash256 value as nexthash
+"""
 def getNextHash(prevHash,transList):
     prevHash = str(prevHash).encode('utf-8')
     transList = transList.tojson().encode('utf-8')
