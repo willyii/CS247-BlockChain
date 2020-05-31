@@ -7,7 +7,7 @@ import hashlib
 import tool 
 
 
-NUM_TRANS_PER_BLOKC = 5
+NUM_TRANS_PER_BLOKC = 1
 
 
 """
@@ -155,6 +155,7 @@ class Node:
                 self.BlockChain.addBlock(new_block) 
                 """TODO stop the mine thread"""
             else:
+                print("Error in valid new block")
                 pass
 
         elif self.miner_indicator:
@@ -188,18 +189,17 @@ class Node:
     """
     If this node is a miner, it should always calling this function to mine new block 
     """
-
     def mine(self, block):
         nonce = blockchain.proof_of_work(self, blcok.currHash, block.zeros)
 
         if nonce < 0:
             return
 
-        block.confirmed = true
+        block.confirmed = True
         block.nonce = nonce
+        return block
 
     def proof_of_work(self, block_hash, zeros_num):
-        ''''''
         """
         Simple Proof of Work Algorithm:
          - Find a number p' such that hash(pp') contains leading 4 zeroes, where p is the previous p'
@@ -207,28 +207,35 @@ class Node:
         :param last_proof: <int>
         :return: <int>
         """
-        flag = 0
-        nonce = 0
-        guess = f'{block_hash}{nonce}'.encode()
-        guess_hash = hashlib.sha256(guess).hexdigest()
-        for i in range(zeros_num):
-            if guess_hash[i] == "0":
-                flag = flag + 1
-
-        while flag != zeros_num:
-            flag = 0
+        pass_flag = False
+        nonce = -1
+        while(not pass_flag):
             nonce += 1
-            guess = f'{block_hash}{nonce}'.encode()
-            guess_hash = hashlib.sha256(guess).hexdigest()
-            for i in range(zeros_num):
-                if guess_hash[i] == "0":
-                    flag = flag + 1
-        print("guess_hash=", guess_hash)
-        print("guess_hash[]=", guess_hash[:zeros_num])
+            guess_hash = hashlib.sha256(block_hash + str(nonce).encode("utf-8")).hexdigest()
+            pass_flag = checkValid(guess_hash, zeros_num)
         return nonce
 
-    nonce = proof_of_work(100, 3)
-    print("nonce=", nonce)
+
+        # flag = 0
+        # nonce = 0
+        # guess = f'{block_hash}{nonce}'.encode()
+        # guess_hash = hashlib.sha256(guess).hexdigest()
+        # for i in range(zeros_num):
+        #     if guess_hash[i] == "0":
+        #         flag = flag + 1
+        # 
+        # while flag != zeros_num:
+        #     flag = 0
+        #     nonce += 1
+        #     guess = f'{block_hash}{nonce}'.encode()
+        #     guess_hash = hashlib.sha256(guess).hexdigest()
+        #     for i in range(zeros_num):
+        #         if guess_hash[i] == "0":
+        #             flag = flag + 1
+        # print("guess_hash=", guess_hash)
+        # print("guess_hash[]=", guess_hash[:zeros_num])
+        # return nonce
+
 
     
     """
