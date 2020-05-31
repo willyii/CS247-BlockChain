@@ -23,8 +23,7 @@ class BlockChain:
         self.chain = [] 
         self.unused = [] 
         self.currHash = 0
-        status = self.addBlock(self.genesisBlock(firstNodeAddress))
-        if not status:
+        if not self.addBlock(self.genesisBlock(firstNodeAddress)):
             raise Exception(" Gensis Block create false")
 
         
