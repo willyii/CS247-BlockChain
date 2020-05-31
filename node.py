@@ -109,7 +109,13 @@ class Node:
     def nextBlock(self, trans):
         self.transreviced.append(trans)
         if len(self.transreviced) >= NUM_TRANS_PER_BLOCK:
-             pass
+            new_block = Block()
+            new_block.prevHash = self.BlockChain.getCurrHash()
+            new_block.transactions = self.transreviced.copy()
+            self.transreviced = []
+            new_block.currHash = getNextHash(new_block.prevHash, new_block.transactions )
+            return new_block
+        return None
 
 
 
@@ -119,15 +125,22 @@ class Node:
     """
     def handleTransaction(self, trans_str):
         # pharse the trans_str 
+        """TODO handle the sinagture of the sender""" 
         trans = Transaction()
         trans.parseJson(trans_str)
-        self.transreviced.append(trans) # if pass the check, add it to recived
-
-        """TODO handle the sinagture of the sender""" 
+        new_block = nextBlock(trans)
+        
+        # Do not generate Block
+        if not new_block:
+            return True
+        
+        
  
-        if self.miner_indicator:
+        if self.miner_indicator: ## New thread to run this 
             # This is miner, mine
             self.mine() 
+
+        """TODO Broad New Block """
 
         return True
 
