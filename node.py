@@ -22,12 +22,11 @@ class Node:
         self.address = address
         self.name = name
         self.miner_indicator = min_ind
-        # self.BlockChain = None # Test
-        # self.nodes = {} # Test
         self.public_key = self.generate_key() 
         self.private_key = self.generate_key()
         self.BlockChain = self.getChain() 
         self.nodes = self.getNodes() 
+        self.NUM_ZEROS = 1
         # self.WhoIam() """TODO function to broad the self information to other nodes"""
   
 
@@ -103,6 +102,16 @@ class Node:
 
         return send_trans
   
+    """
+    When get new transaction, add it to list. If bigger than threshold, wrap as block and broadcast
+    trans: New com transaction
+    """
+    def nextBlock(self, trans):
+        self.transreviced.append(trans)
+        if len(self.transreviced) >= NUM_TRANS_PER_BLOCK:
+             pass
+
+
 
     """
     Process the transaction reviced from others
