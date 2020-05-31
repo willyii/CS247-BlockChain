@@ -190,7 +190,7 @@ class Node:
     If this node is a miner, it should always calling this function to mine new block 
     """
     def mine(self, block):
-        nonce = blockchain.proof_of_work(self, blcok.currHash, block.zeros)
+        nonce = proof_of_work(self, blcok.currHash, block.zeros)
 
         if nonce < 0:
             return
