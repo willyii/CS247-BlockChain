@@ -8,6 +8,7 @@ import json
 from block import Block
 from transaction import Transaction
 import hashlib
+import tool
 
 NUM_TRANS_PER_BLOCK = 5
 
@@ -18,51 +19,49 @@ class BlockChain:
     unused is a lost of all unsed/confirmed transactions
     currHash is the hash value of last block on the chain
     """
-    def __init__(self):
+    def __init__(self,firstNodeAddress):
         self.chain = [] 
         self.unused = [] 
-        self.currHash = 0 
+        status = self.addBlock(self.genesisBlock(firstNodeAddress))
+        if not status:
+            raise Exception(" Gensis Block create false")
+
+        
   
+    """
+    Generate a Genesis Block
+    """
+    def genesisBlock(self,firstNodeAddress):
+        # generate a genesisiblock
+        # index:1,  prevHash: 0
+        # with one output transaction
+        genesis_block = Block()
+        genesis_block.prevHash = 0
+        genesis_block.blockIndex = 1
 
-    """
-    function for calculate sha256 
-    input: block as string format which need to be checked 
-    return: sha256 value
-    """
-    def hash_sha256(self,block_string):
-        # hash block
-        # from json to dictionary, sort by key
-        #block_string = json.dumps(block,sort_keys=True).encode('utf-8')
-        hashcode = hashlib.sha256(block_string).hexdigest()
-        return hashcode
-    
-    """
-    function for check validation of the block
-    which requesting for adding to current chain
-    input: block need to be checked 
-    return: validation or not
-    """
-    #class ValidationError(Exception):
-    #    pass
-    
+        # generate output transaction
+        outputs = Transaction()
+        outputs.f = "master"
+        outputs.t = firstNodeAddress
+        outputs.value = 50
+        outputs.header = " Genesis Block reward for firstNode"
 
-    def validation(self,block):
-        status = 0
-        #checkBlock = Block()
-        checkBlock = block
-        if checkBlock.blockIndex >= len(self.chain)+2:
-            # this block is in the future
-            status = 0
-            raise Exception(" This Block is in the future")
-            return status
-        return status 
+        # add to unused list 
+        self.unused.append(outputs)
+        # calculate getNext hash
+        nextHash = tool.getNextHash(0,self.unused)
+        genesis_block.currHash = nextHash
+        genesis_block.confirmed = True
+        
+        return genesis_block
+        
     
     """
-    function for adding a comfirmed block to crrent chain
+    function for adding a comfirmed block to current chain
     input: Block obejct, hash256 of this new block
     return: latest valid block 
     """
-    def addBlock(self,block,newHash):
+    def addBlock(self,block):
         # if complete proofofwork, add to blockchain
         success = False
         checkBlock = block
@@ -88,9 +87,7 @@ class BlockChain:
             # add output transactions in the unused list
             for o in item.output:
                 self.unused.append(item)
-                
-        # update latest hash in the blockchain
-        self.currHash = newHash
+
         # add block to chain
         self.chain.append(block)
         success = True
