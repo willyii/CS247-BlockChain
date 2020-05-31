@@ -15,7 +15,6 @@ def getTestChain():
     return testblock 
 
 
-
 def checkValid(prevHash,nonce,zeros):
     zeroString = []
     for i in range(zeros):
@@ -48,35 +47,44 @@ def getTestBlock(node):
 
 
 if __name__ == "__main__":
-    """
-    Initialize testnode
-    """
-    testnode = Node(address = "0", name="fuck", min_ind = 0)
-    testnode.BlockChain = getTestChain()
-    print("testnode info:")
-    print(testnode.tojson(1))
-    print("Initialization test pass")
 
     """
-    Send Coint Test
+    Initalize node test
     """
-    send = testnode.sendCoin("1", 7)
-    print(send.tojson())
-    if type(send.tojson()) == type("sss"):
-        print("Send Coin tojson test pass")
+    testnode = Node(address = "0", name = "fuck", min_ind = 0)
+    print(testnode.tojson)
 
-    """
-    HandleTransaction Test 
-    """
-    test_trans = Transaction("master","0",header="test3", value = 7)
-    print("Before handle trans: ", testnode.transreviced)
-    testnode.handleTransaction(test_trans.tojson())
-    print("After handle trans: ", testnode.transreviced)
-    print("HanleTransaction Test Pass")
 
-    """
-    HanleBlock Test
-    """
-    testblock = getTestBlock(testnode)
-    if testnode.handleBlock(testblock.tojson()):
-        print("HandleBlock Test Pass")
+
+    # """
+    # Initialize testnode
+    # """
+    # testnode = Node(address = "0", name="fuck", min_ind = 0)
+    # testnode.BlockChain = getTestChain()
+    # print("testnode info:")
+    # print(testnode.tojson(1))
+    # print("Initialization test pass")
+    # 
+    # """
+    # Send Coint Test
+    # """
+    # send = testnode.sendCoin("1", 7)
+    # print(send.tojson())
+    # if type(send.tojson()) == type("sss"):
+    #     print("Send Coin tojson test pass")
+    # 
+    # """
+    # HandleTransaction Test 
+    # """
+    # test_trans = Transaction("master","0",header="test3", value = 7)
+    # print("Before handle trans: ", testnode.transreviced)
+    # testnode.handleTransaction(test_trans.tojson())
+    # print("After handle trans: ", testnode.transreviced)
+    # print("HanleTransaction Test Pass")
+    # 
+    # """
+    # HanleBlock Test
+    # """
+    # testblock = getTestBlock(testnode)
+    # if testnode.handleBlock(testblock.tojson()):
+    #     print("HandleBlock Test Pass")

@@ -10,7 +10,7 @@ from transaction import Transaction
 import hashlib
 import tool
 
-NUM_TRANS_PER_BLOCK = 5
+NUM_TRANS_PER_BLOCK = 1
 
 class BlockChain:
     """

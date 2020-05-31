@@ -48,9 +48,7 @@ class Node:
         collected_chain = []
 
         if not collected_chain:
-            tmp = BlockChain()
-            # caculate the initial block
-            return tmp
+            return BlockChain(self.address)
 
 
     """
