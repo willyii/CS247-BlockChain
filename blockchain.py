@@ -83,6 +83,7 @@ class BlockChain:
     return: latest vlaid block 
     """
     def addBlock(self,block):
+        # if complete proofofwork, add to blockchain
         #checkBlock = Block()
         checkBlock = block
         # if blockchain contains the block
