@@ -17,3 +17,10 @@
   - Test.py for each function
   - Web module
   - Communication between nodes
+
+## May 31, 2020:
+- ***Done***:
+  - Finished code for block chain part. Pass the local test, check in testnode.py.
+- ***TODO***:
+  - Communication between nodes
+  - Flask Application
