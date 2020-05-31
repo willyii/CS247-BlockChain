@@ -4,10 +4,10 @@ from block import Block
 import json
 import time 
 import hashlib
-import tool 
+from tool import getNextHash, valid_proof_of_work 
 
 
-NUM_TRANS_PER_BLOKC = 1
+NUM_TRANS_PER_BLOCK= 1
 
 
 """
@@ -128,7 +128,7 @@ class Node:
         """TODO handle the sinagture of the sender""" 
         trans = Transaction()
         trans.parseJson(trans_str)
-        new_block = nextBlock(trans)
+        new_block = self.nextBlock(trans)
         
         # Do not generate Block
         if not new_block:

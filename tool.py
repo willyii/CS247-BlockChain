@@ -44,11 +44,8 @@ combine previous hash and current transactions
 calculate hash256 value as nexthash
 """
 def getNextHash(prevHash,transList):
-    prevHash = str(prevHash).encode('utf-8')
-    trans_str = ""
-    for item in transList:
-        item = item.tojson().encode('utf-8')
-        trans_str += item
+    prevHash = str(prevHash).encode("utf-8")
+    trans_str = "".join([str(t.tojson()) for t in transList]).encode("utf-8")
     nextHash = hashlib.sha256(prevHash + trans_str).hexdigest()
     return nextHash
 
