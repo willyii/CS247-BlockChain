@@ -7,7 +7,6 @@ confirmation
 import hashlib
 import json
 from block import Block
-from blockchain import BlockChain
 from transaction import Transaction
 
 """
@@ -35,7 +34,7 @@ def valid_proof_of_work(incomeBlock):
     checkNonce = incomeBlock.nonce
 
     # validate nonce
-    getHash = hashlib.sha256(checkHash + str(checkNonce).encode('utf-8')).hexdigest()
+    getHash = hashlib.sha256(str(checkHash).encode("utf-8") + str(checkNonce).encode('utf-8')).hexdigest()
     return checkValid(getHash,checkZero) 
 
 

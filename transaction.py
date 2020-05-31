@@ -60,3 +60,7 @@ class Transaction:
             tmp_t = Transaction()
             tmp_t.parseJson(t)
             self.output.append(tmp_t)
+
+
+    def __eq__(self, other):
+        return self.__dict__ == other.__dict__

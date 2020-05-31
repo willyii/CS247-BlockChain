@@ -15,7 +15,7 @@ class Block:
         self.currHash = currenthash
         self.prevHash = prevhash
         self.transactions = trans
-        self.confirmed = False 
+        self.confirmed = False
         self.miner = miner
         self.zeros = zeros
         self.nonce = None 
@@ -50,9 +50,13 @@ class Block:
         self.miner = tmp["miner"]
         self.zeros = tmp["zeros"]
         self.nonce = tmp["nonce"]
+        self.confirmed = tmp["confirmed"]
 
         self.transactions = []
         for t in tmp["transactions"]:
             tmp_t = Transaction()
             tmp_t.parseJson(t)
             self.transactions.append(tmp_t)
+
+    def __eq__(self, other):
+        return self.__dict__ == other.__dict__

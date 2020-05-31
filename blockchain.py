@@ -37,11 +37,8 @@ class BlockChain:
         # with one output transaction
 
         # generate output transaction
-        outputs = Transaction()
-        outputs.f = "master"
-        outputs.t = firstNodeAddress
-        outputs.value = 50
-        outputs.header = " Genesis Block reward for firstNode"
+        msg = " Genesis Block reward for firstNode"
+        outputs = Transaction("master", firstNodeAddress, [],[], msg, 50)
 
         # genesis transfer
         aggregateTrans = Transaction("master",firstNodeAddress,[],[],"Genesis Block transaction",0)
@@ -55,6 +52,7 @@ class BlockChain:
         # calculate getNext hash
         genesis_block.currHash = tool.getNextHash(genesis_block.prevHash,genesis_block.transactions)
         genesis_block.confirmed = True
+        genesis_block.miner = firstNodeAddress
         
         return genesis_block
         
@@ -69,7 +67,7 @@ class BlockChain:
         # ADD genesis block
         if not self.chain:
             self.chain.append(block)
-            self.currentHash = block.currentHash
+            self.currHash = block.currHash
             for o in block.transactions[0].output:
                 self.unused.append(o)
             return True
@@ -88,13 +86,14 @@ class BlockChain:
         # remove input transactions out of unused list
         for item in block.transactions:
             for t in item.input:
-                exists = self.unused.remove(item)
-                if(exists == False): # input trans does not exists
+                try:
+                    self.unused.remove(t)
+                except ValueError:
                     raise Exception(" input transaction may not exists")
-                    return success
+                    return False
             # add output transactions in the unused list
             for o in item.output:
-                self.unused.append(item)
+                self.unused.append(t)
             
         # add block to chain
         self.chain.append(block)
