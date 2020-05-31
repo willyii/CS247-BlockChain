@@ -41,6 +41,6 @@ def proof_of_work(incomeBlock):
 def getNextHash(prevHash,transList):
     prevHash = str(prevHash).encode('utf-8')
     transList = transList.tojson().encode('utf-8')
-    nextHash = hashlib(prevHash + transList).hexdigest()
+    nextHash = hashlib.sha256(prevHash + transList).hexdigest()
     return nextHash
 
