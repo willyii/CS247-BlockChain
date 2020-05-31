@@ -70,7 +70,7 @@ class BlockChain:
         # duplication
         if checkBlock in self.chain:
             raise Exception(" input block is a duplicated block")
-            return self.chain
+            return success
 
         if checkBlock.blockIndex >= len(self.chain)+2:
             raise Exception(" This Block is in the future")
@@ -84,15 +84,16 @@ class BlockChain:
                 exists = self.unused.remove(item)
                 if(exists == False): # input trans does not exists
                     raise Exception(" input transaction may not exists")
-                    return checkBlock
+                    return success
             # add output transactions in the unused list
             for o in item.output:
                 self.unused.append(item)
                 
-            # update latest hash in the blockchain
-            self.currHash = newHash
-            # add block to chain
-            self.chain.append(block)
+        # update latest hash in the blockchain
+        self.currHash = newHash
+        # add block to chain
+        self.chain.append(block)
+        success = True
 
         return success
 
