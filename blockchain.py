@@ -22,10 +22,8 @@ class BlockChain:
         self.chain = [] 
         self.unused = [] 
         self.currHash = 0 
-        # a gloabl value for storing hash value
-        self.NextHash = 0
+  
 
-    
     """
     function for calculate sha256 
     input: block as string format which need to be checked 
@@ -57,63 +55,46 @@ class BlockChain:
             status = 0
             raise Exception(" This Block is in the future")
             return status
-        # 1. check nonce is satisfied with proof
-        checkNonce = checkBlock.nonce
-        checkHash = checkBlock.currHash
-        print(checkHash)
-        # get encode string format of block object
-        prevBlockHash = checkBlock.tojson().encode('utf-8')
-        if checkBlock.blockIndex == 1:
-            prevBlockHash = str(0).encode('utf-8')
-        # return sha256 value
-        self.NextHash = self.hash_sha256(prevBlockHash + str(checkNonce).encode('utf-8'))
-        if(self.NextHash == checkHash):
-            status = 1
-        else:
-            status = 0
-            raise Exception(" This Block has HASH error")
-            return status
-        # 2. TO DO check signature of all transactions in the block
-        # 3. TO DO check signature of the Block
         return status 
     
     """
     function for adding a comfirmed block to crrent chain
-    input: Block obejct
-    return: latest vlaid block 
+    input: Block obejct, hash256 of this new block
+    return: latest valid block 
     """
-    def addBlock(self,block):
+    def addBlock(self,block,newHash):
         # if complete proofofwork, add to blockchain
-        #checkBlock = Block()
+        success = False
         checkBlock = block
         # if blockchain contains the block
         # duplication
         if checkBlock in self.chain:
             raise Exception(" input block is a duplicated block")
-            return checkBlock
+            return self.chain
+
+        if checkBlock.blockIndex >= len(self.chain)+2:
+            raise Exception(" This Block is in the future")
+            return success
     
-        if self.validation(checkBlock) == 1: # if the block is valid
-            trans = checkBlock.transactions
-           # find out all trans corrsponding to input 
-           # remove input transactions out of unused list
-            for item in trans:
-                for t in item.input:
-                    exists = self.unused.remove(item)
-                    if(exists == False): # input trans does not exists
-                        raise Exception(" input transaction may not exists")
-                        return checkBlock
-                # add output transactions in the unused list
-                for o in item.output:
-                    self.unused.append(item)
+        trans = checkBlock.transactions
+        # find out all trans corrsponding to input 
+        # remove input transactions out of unused list
+        for item in trans:
+            for t in item.input:
+                exists = self.unused.remove(item)
+                if(exists == False): # input trans does not exists
+                    raise Exception(" input transaction may not exists")
+                    return checkBlock
+            # add output transactions in the unused list
+            for o in item.output:
+                self.unused.append(item)
                 
-            # update block confirmed value
-            checkBlock.confirmed = True
-            # update hash
-            self.currHash = self.NextHash
-            # add to chain
+            # update latest hash in the blockchain
+            self.currHash = newHash
+            # add block to chain
             self.chain.append(block)
 
-        return checkBlock
+        return success
 
     """
     function for adding new unused transactions
