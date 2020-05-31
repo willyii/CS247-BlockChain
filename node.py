@@ -4,7 +4,7 @@ from block import Block
 import json
 import time 
 import hashlib
-import re
+import tool 
 
 
 NUM_TRANS_PER_BLOKC = 5
@@ -133,13 +133,7 @@ class Node:
         # Do not generate Block
         if not new_block:
             return True
-        
-        
  
-        if self.miner_indicator: ## New thread to run this 
-            # This is miner, mine
-            self.mine() 
-
         """TODO Broad New Block """
 
         return True
@@ -151,12 +145,22 @@ class Node:
     """
     def handleBlock(self, block_str):
         
-        # parse the block_str
-
         """TODO hanle the signature of the sender"""
+
         new_block = Block()
         new_block.parseJson(block_str)
-        self.BlockChain.addBlock(new_block)
+
+        if new_block.confirmed:# if confirmed by someone, check and add block
+            if proof_of_work(new_block):
+                self.BlockChain.addBlock(new_block) 
+                """TODO stop the mine thread"""
+            else:
+                pass
+
+        elif self.miner_indicator:
+            pass
+            """TODO start thread to mine"""
+        
         return True
 
 
