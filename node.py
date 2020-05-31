@@ -188,8 +188,47 @@ class Node:
     """
     If this node is a miner, it should always calling this function to mine new block 
     """
-    def mine():
-        pass
+
+    def mine(self, block):
+        nonce = blockchain.proof_of_work(self, blcok.currHash, block.zeros)
+
+        if nonce < 0:
+            return
+
+        block.confirmed = true
+        block.nonce = nonce
+
+    def proof_of_work(self, block_hash, zeros_num):
+        ''''''
+        """
+        Simple Proof of Work Algorithm:
+         - Find a number p' such that hash(pp') contains leading 4 zeroes, where p is the previous p'
+         - p is the previous proof, and p' is the new hash
+        :param last_proof: <int>
+        :return: <int>
+        """
+        flag = 0
+        nonce = 0
+        guess = f'{block_hash}{nonce}'.encode()
+        guess_hash = hashlib.sha256(guess).hexdigest()
+        for i in range(zeros_num):
+            if guess_hash[i] == "0":
+                flag = flag + 1
+
+        while flag != zeros_num:
+            flag = 0
+            nonce += 1
+            guess = f'{block_hash}{nonce}'.encode()
+            guess_hash = hashlib.sha256(guess).hexdigest()
+            for i in range(zeros_num):
+                if guess_hash[i] == "0":
+                    flag = flag + 1
+        print("guess_hash=", guess_hash)
+        print("guess_hash[]=", guess_hash[:zeros_num])
+        return nonce
+
+    nonce = proof_of_work(100, 3)
+    print("nonce=", nonce)
 
     
     """
