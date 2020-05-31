@@ -74,23 +74,19 @@ class BlockChain:
                 self.unused.append(o)
             return True
 
-        # if complete proofofwork, add to blockchain
-        success = False
-        checkBlock = block
         # if blockchain contains the block
         # duplication
-        if checkBlock in self.chain:
+        if block in self.chain:
             raise Exception(" input block is a duplicated block")
-            return success
+            return False
 
-        if checkBlock.blockIndex >= len(self.chain)+2:
+        if block.blockIndex >= len(self.chain)+2:
             raise Exception(" This Block is in the future")
-            return success
+            return False
     
-        trans = checkBlock.transactions
         # find out all trans corrsponding to input 
         # remove input transactions out of unused list
-        for item in trans:
+        for item in block.transactions:
             for t in item.input:
                 exists = self.unused.remove(item)
                 if(exists == False): # input trans does not exists
@@ -104,9 +100,8 @@ class BlockChain:
         self.chain.append(block)
         # update currenthash
         self.currHash = block.currHash
-        success = True
 
-        return success
+        return True
 
     """
     function for adding new unused transactions
