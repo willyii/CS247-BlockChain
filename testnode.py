@@ -61,15 +61,16 @@ if __name__ == "__main__":
     Send Coint Test
     """
     send = testnode.sendCoin("1", 7)
-    print(type(send.tojson()))
-    print("Send Coint tojson test pass")
+    print(send.tojson())
+    if type(send.tojson()) == type("sss"):
+        print("Send Coin tojson test pass")
 
     """
     HandleTransaction Test 
     """
     test_trans = Transaction("master","0",header="test3", value = 7)
     print("Before handle trans: ", testnode.transreviced)
-    testnode.handleTransaction(send.tojson())
+    testnode.handleTransaction(test_trans.tojson())
     print("After handle trans: ", testnode.transreviced)
     print("HanleTransaction Test Pass")
 
