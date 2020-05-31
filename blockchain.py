@@ -22,6 +22,7 @@ class BlockChain:
     def __init__(self,firstNodeAddress):
         self.chain = [] 
         self.unused = [] 
+        self.currHash = 0
         status = self.addBlock(self.genesisBlock(firstNodeAddress))
         if not status:
             raise Exception(" Gensis Block create false")
@@ -90,6 +91,8 @@ class BlockChain:
 
         # add block to chain
         self.chain.append(block)
+        # update currenthash
+        self.currHash = block.currHash
         success = True
 
         return success
