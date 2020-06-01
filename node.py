@@ -198,15 +198,18 @@ class Node:
         block.confirmed = true
         block.nonce = nonce
 
+
+
     def proof_of_work(self, block_hash, zeros_num):
-        ''''''
-        """
+        '''
         Simple Proof of Work Algorithm:
          - Find a number p' such that hash(pp') contains leading 4 zeroes, where p is the previous p'
          - p is the previous proof, and p' is the new hash
-        :param last_proof: <int>
-        :return: <int>
-        """
+        :param block_hash: <int>
+        :param zeros_num: <int>
+        :return:
+        '''
+
         flag = 0
         nonce = 0
         guess = f'{block_hash}{nonce}'.encode()
