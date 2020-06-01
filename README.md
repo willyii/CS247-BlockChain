@@ -28,6 +28,8 @@ $ docker run --rm -p 81:5000 --name hello --link hi blockchain
 
 > http://0.0.0.0:80/mine
 
+![Api1](https://github.com/willyii/CS247-BlockChain/blob/dockercommunication/way1_pic/mine.png?raw=true)
+
 (2) Get the chain of container hi, we can see that there are 4 blocks, including the initial one (use "Get" button).
 
 > http://0.0.0.0:80/chain
