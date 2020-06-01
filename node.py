@@ -5,6 +5,7 @@ import json
 import time 
 import hashlib
 from tool import getNextHash, valid_proof_of_work, checkValid
+import requests
 
 
 NUM_TRANS_PER_BLOCK= 1
@@ -24,8 +25,8 @@ class Node:
         self.miner_indicator = min_ind
         self.public_key = self.generate_key() 
         self.private_key = self.generate_key()
-        self.BlockChain = self.getChain() 
         self.nodes = self.getNodes() 
+        self.BlockChain = self.getChain() 
         self.NUM_ZEROS = 1
         # self.WhoIam() """TODO function to broad the self information to other nodes"""
   
@@ -34,7 +35,7 @@ class Node:
     """
     def getNodes(self):
         """TODO Collect node info from other nodes"""
-        nodes = [{self.tojson()}]
+        nodes = [{"address": "http://0.0.0.0:100"}]#,{"address": "http://0.0.0.0:101"}]
         return nodes 
         
 
@@ -43,11 +44,24 @@ class Node:
     Get blockchain info from others
     """
     def getChain(self):
-        """TODO Collect info from other nodes"""
-        collected_chain = []
+        best_chain = BlockChain(self.address)
+        # select best train
+        for n in self.nodes:
+            try:
+                if n.address == self.address:# skip self
+                    continue
+                r = requests.get(url= n["address"] + "/getChain")
+                if r.status_code == 200: # get chain from others
+                    new_chain = BlockChain(firstNodeAddress = "tmp")
+                    new_chain.parseJson(r.data)
+                    if len(new_chain.chain) >= len(best_chain.chain):
+                        best_chain = new_chain.copy()
+            except:
+                pass
+        return best_chain        
+                
+                
 
-        if not collected_chain:
-            return BlockChain(self.address)
 
 
     """
@@ -93,10 +107,7 @@ class Node:
         msg = "I, "+ str(self.address) + ", going to send money to " + str(to) + " money:" + str(value)
         send_trans = Transaction(self.address, to, inputlist, outputlist, msg, value = 0)
 
-        """
-        TODO broadcast the transaction
-        """
-
+        self.broadTrans(send_trans)
         return send_trans
   
     """
@@ -133,9 +144,9 @@ class Node:
         if not new_block:
             return True
  
-        """TODO Broad New Block """
+        self.boradBlock(new_block)
 
-        return new_block # Temporae
+        return True # Temporae
 
 
     """
@@ -158,7 +169,8 @@ class Node:
 
         elif self.miner_indicator:
             print("Hey this is miner, I'm going to mine")
-            return self.mine(new_block)
+            confirmed = self.mine(new_block)
+            self.boradBlock(confirmed)
             """TODO start thread to mine and broad mined block"""
         else:
             print("Hey this is unconfirmed block , but I am not miner, so I gonna miss it")
@@ -175,15 +187,24 @@ class Node:
     """
     Broad the transaction to other nodes 
     """
-    def broadTrans(self):
-        pass
+    def broadTrans(self, trans):
+        for n in self.nodes:
+            try:
+                r = requests.post(url=n["address"]+"/handleTrans", data = trans.tojson())
+            except:
+                pass
+
 
 
     """
     Broadcast the Block mined by this Node
     """
-    def boradBlock(self):
-        pass
+    def boradBlock(self, b ):
+        for n in self.nodes:
+            try:
+                r = requests.post(url=n["address"]+"/handleBlock", data = b.tojson())
+            except:
+                pass
 
 
     """
