@@ -1,63 +1,112 @@
-# Learn Blockchains by Building One
-
-[![Build Status](https://travis-ci.org/dvf/blockchain.svg?branch=master)](https://travis-ci.org/dvf/blockchain)
-
-This is the source code for my post on [Building a Blockchain](https://medium.com/p/117428612f46). 
-
-## Installation
-
-1. Make sure [Python 3.6+](https://www.python.org/downloads/) is installed. 
-2. Install [pipenv](https://github.com/kennethreitz/pipenv). 
-
-```
-$ pip install pipenv 
-```
-3. Install requirements  
-```
-$ pipenv install 
-``` 
-
-4. Run the server:
-    * `$ pipenv run python blockchain.py` 
-    * `$ pipenv run python blockchain.py -p 5001`
-    * `$ pipenv run python blockchain.py --port 5002`
+# Communication between docker containers
     
-## Docker
+## Docker way 1
 
-Another option for running this blockchain program is to use Docker.  Follow the instructions below to create a local Docker container:
+Follow the instructions below to create a local Docker container:
 
-1. Clone this repository
-2. Build the docker container
+1. Clone this repository.
+2. Build the docker container.
 
 ```
 $ docker build -t blockchain .
 ```
 
-3. Run the container
+3. Run one container and give a name to it.
 
 ```
-$ docker run --rm -p 80:5000 blockchain
+$ docker run --rm -p 80:5000 --name hi blockchain
 ```
 
-4. To add more instances, vary the public port number before the colon:
+4. Run another container and give a name to it and build a link to the previous one.
 
 ```
-$ docker run --rm -p 81:5000 blockchain
-$ docker run --rm -p 82:5000 blockchain
-$ docker run --rm -p 83:5000 blockchain
+$ docker run --rm -p 81:5000 --name hello --link hi blockchain
 ```
 
-## Installation (C# Implementation)
+5. Test by using Postman:
+(1) Mine 3 blocks in container hi (use "Get" button).
 
-1. Install a free copy of Visual Studio IDE (Community Edition):
-https://www.visualstudio.com/vs/
+> http://0.0.0.0:80/mine
 
-2. Once installed, open the solution file (BlockChain.sln) using the File > Open > Project/Solution menu options within Visual Studio.
+(2) Get the chain of container hi, we can see that there are 4 blocks, including the initial one (use "Get" button).
 
-3. From within the "Solution Explorer", right click the BlockChain.Console project and select the "Set As Startup Project" option.
+> http://0.0.0.0:80/chain
 
-4. Click the "Start" button, or hit F5 to run. The program executes in a console window, and is controlled via HTTP with the same commands as the Python version.
+(3) At the same time, we can see that the container hello has only one initial block (use "Get" button).
 
+> http://0.0.0.0:81/chain
+
+(4) Register the node hi to node hello. The way to write the address is important. You can use the name of the container with its port (use "Post" button).
+
+> http://0.0.0.0:81/nodes/register
+
+>{
+    "nodes": ["http://hi:5000"]
+}
+
+(5) Resolve the conflict. We can see "Our chain was replaced" (use "Get" button).
+
+> http://0.0.0.0:81/nodes/resolve
+
+## Docker way 2
+
+Follow the instructions below to create a local Docker container:
+
+1. Clone this repository.
+2. Build the docker container.
+
+```
+$ docker build -t blockchain .
+```
+
+3. Run one container and give a name to it.
+
+```
+$ docker run --rm -p 80:5000 --name hi blockchain
+```
+
+4. Run another container and give a name to it and build a link to the previous one.
+
+```
+$ docker run --rm -p 81:5000 --name hello blockchain
+```
+
+5. Get the fisrt container's real address.
+
+(1) Get the CONTAINER ID of the container hi. 
+```
+$ docker ps
+```
+
+(2) Get the real address of the container hi by using its CONTAINER ID. Here the address is "172.17.0.2".
+```
+$ docker inspect --format='{{.NetworkSettings.IPAddress}}' e6165f89f9c0
+```
+
+5. Test by using Postman:
+(1) Mine 3 blocks in container hi (use "Get" button).
+
+> http://0.0.0.0:80/mine
+
+(2) Get the chain of container hi, we can see that there are 4 blocks, including the initial one (use "Get" button). 
+
+> http://0.0.0.0:80/chain
+
+(3) At the same time, we can see that the container hello has only one initial block (use "Get" button).
+
+> http://0.0.0.0:81/chain
+
+(4) Register the node hi to node hello. Here we use container hi's real address "172.17.0.2". You can use the real address of the container with its port (use "Post" button).
+
+> http://0.0.0.0:81/nodes/register
+
+>{
+    "nodes": ["http://172.17.0.2:5000"]
+}
+
+(5) Resolve the conflict. We can see "Our chain was replaced" (use "Get" button).
+
+> http://0.0.0.0:81/nodes/resolve
 
 ## Contributing
 
