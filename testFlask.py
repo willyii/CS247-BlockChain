@@ -1,11 +1,11 @@
-from flask import Flask
+from flask import Flask,Response
 
 
 app = Flask(__name__)
 
 @app.route('/')
 def hello():
-    return "Hello Fucking Bitcoin"
+    return Response("Hello Fucking Bitcoin")
 
 if __name__ == "__main__":
-    app.run()
+    app.run("0.0.0.0",port=80,debug=True)
