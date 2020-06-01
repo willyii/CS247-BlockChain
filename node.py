@@ -1,4 +1,5 @@
 from blockchain import BlockChain
+from threading import Thread
 from transaction import Transaction
 from block import Block
 import json
@@ -27,7 +28,8 @@ class Node:
         self.private_key = self.generate_key()
         self.nodes = self.getNodes() 
         self.BlockChain = self.getChain() 
-        self.NUM_ZEROS = 1
+        self.NUM_ZEROS = 4
+        self.threadjob = False
         # self.WhoIam() """TODO function to broad the self information to other nodes"""
   
     """
@@ -84,15 +86,17 @@ class Node:
         outputlist = []
 
         """ Looking for input list """
-        for trans in self.BlockChain.getUnused():
+        for trans in self.BlockChain.unused:
             if trans.to != self.address:# if it is not  send to me 
                 continue
             coin += trans.value
             inputlist.append(trans)
             if coin >= value:
                 break
-        if coin < value: 
-            return None
+        if coin < value:
+            print("I only have : ", coin)
+            print("Do not have enough money")
+            return False
 
         """ Generate outputlist"""
         msg="Cao ni ma de shou qian " + to + str(time.time()) + str(value)
@@ -101,14 +105,13 @@ class Node:
 
         if coin > value: # if I have some change back
             msg ="Cao ni ma de zhao ling qian" + self.address + str(time.time()) + str(coin-value)
-            new_tran = Transaction(self.address, self.address, inlist= inputlist, outlist=[], header=msg, value=coin-value)
+            new_tran = Transaction(self.address, self.address, inlist= inputlist, outlist=[], header=msg, value=(coin-value))
             outputlist.append(new_tran)
 
         msg = "I, "+ str(self.address) + ", going to send money to " + str(to) + " money:" + str(value)
         send_trans = Transaction(self.address, to, inputlist, outputlist, msg, value = 0)
-
         self.broadTrans(send_trans)
-        return send_trans
+        return True
   
     """
     When get new transaction, add it to list. If bigger than threshold, wrap as block and broadcast
@@ -118,7 +121,7 @@ class Node:
         self.transreviced.append(trans)
         if len(self.transreviced) >= NUM_TRANS_PER_BLOCK:
             new_block = Block()
-            new_block.blockIndex = self.BlockChain.chain[-1].blockIndex + 1
+            new_block.blockIndex = len(self.BlockChain.chain) + 1
             new_block.prevHash = self.BlockChain.getCurrHash()
             new_block.transactions = self.transreviced.copy()
             self.transreviced = []
@@ -159,22 +162,51 @@ class Node:
 
         new_block = Block()
         new_block.parseJson(block_str)
+        if not self.checkBlock(new_block):
+            return False
+
         if new_block.confirmed:# if confirmed by someone, check and add block
             if valid_proof_of_work(new_block):
+                self.threadjob = False
                 self.BlockChain.addBlock(new_block) 
-                """TODO stop the mine thread"""
             else:
                 raise Exception("Hey this Block's Hash is not valid")
                 return False
 
         elif self.miner_indicator:
+            if self.threadjob:
+                print("This is miner, I should mine, but I'm already doing ")
+                return True
             print("Hey this is miner, I'm going to mine")
-            confirmed = self.mine(new_block)
-            self.boradBlock(confirmed)
-            """TODO start thread to mine and broad mined block"""
+            """New Thread to mine and broadBlock"""
+            self.threadjob = True
+            t = Thread(target=self.mine, args = (new_block,))
+            t.start()
         else:
             print("Hey this is unconfirmed block , but I am not miner, so I gonna miss it")
         return True
+    
+
+    """
+    Check the Block is valid or not
+    """
+    def checkBlock(self, block):
+        # already have or not 
+        if block in self.BlockChain.chain:
+            print("I already have this block")
+            return False
+        # check if the past block   
+        if block.blockIndex <= self.BlockChain.chain[-1].blockIndex:
+            print("Block pos not valid")
+            return False
+        # Check if it is future blokc
+        if block.blockIndex >= len(self.BlockChain.chain)+2:
+            print("I have block index problem, refetch the Chain")
+            self.BlockChain = self.getChain()
+            return self.checkBlock(block)
+        
+        return True
+
 
 
     """
@@ -195,7 +227,6 @@ class Node:
                 pass
 
 
-
     """
     Broadcast the Block mined by this Node
     """
@@ -211,6 +242,7 @@ class Node:
     If this node is a miner, it should always calling this function to mine new block 
     """
     def mine(self, block):
+        print("===========================Mining coin in thread======================")
         nonce = self.proof_of_work(block.currHash, block.zeros)
 
         if nonce < 0:
@@ -219,7 +251,8 @@ class Node:
         block.miner = self.address
         block.confirmed = True
         block.nonce = nonce
-        return block
+        print("==========================I mined out===============")
+        self.boradBlock(block)
 
     def proof_of_work(self, block_hash, zeros_num):
         """

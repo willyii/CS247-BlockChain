@@ -18,7 +18,8 @@ class Transaction:
         self.output = outlist
         self.header = header
         self.value = value
-        self.timestamp = time()
+        self.timestamp = 0 # Test
+        # self.timestamp = time()SS
 
 
     """

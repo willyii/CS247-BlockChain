@@ -41,8 +41,8 @@ class BlockChain:
         outputs = Transaction("master", firstNodeAddress, [],[], msg, 50)
 
         # genesis transfer
-        aggregateTrans = Transaction("master",firstNodeAddress,[],[],"Genesis Block transaction",0)
-        aggregateTrans.output.append(outputs)
+        aggregateTrans = Transaction("master",firstNodeAddress,[],[outputs],"Genesis Block transaction",0)
+        # aggregateTrans.output.append(outputs)
 
         genesis_block = Block()
         genesis_block.prevHash = 0
@@ -93,7 +93,7 @@ class BlockChain:
                     return False
             # add output transactions in the unused list
             for o in item.output:
-                self.unused.append(t)
+                self.unused.append(o)
             
         # add block to chain
         self.chain.append(block)
