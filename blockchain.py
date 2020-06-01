@@ -1,178 +1,276 @@
-"""
-BlockChain class
-
-Implementation of a blockchain
-store all confirmed blocks
-"""
-import json
-from block import Block
-from transaction import Transaction
 import hashlib
-import tool
+import json
+from textwrap import dedent
+from time import time
+from urllib.parse import urlparse
+from uuid import uuid4
 
-NUM_TRANS_PER_BLOCK = 1
+import requests
+from flask import Flask, jsonify, request
 
-class BlockChain:
-    """
-    Initialize the blickchain
-    chain is the blockchain 
-    unused is a lost of all unsed/confirmed transactions
-    currHash is the hash value of last block on the chain
-    """
-    def __init__(self,firstNodeAddress):
-        self.chain = [] 
-        self.unused = [] 
-        self.currHash = 0
-        if not self.addBlock(self.genesisBlock(firstNodeAddress)):
-            raise Exception(" Gensis Block create false")
 
-        
-  
-    """
-    Generate a Genesis Block
-    """
-    def genesisBlock(self,firstNodeAddress):
-        # generate a genesisiblock
-        # index:1,  prevHash: 0
-        # with one output transaction
+class Blockchain(object):
+    def __init__(self):
+        self.chain = []
+        self.current_transactions = []
+        self.nodes = set()  # a method for registering nodes
 
-        # generate output transaction
-        msg = " Genesis Block reward for firstNode"
-        outputs = Transaction("master", firstNodeAddress, [],[], msg, 50)
+        # create the genesis block
+        self.new_block(previous_hash=1, proof=100)
 
-        # genesis transfer
-        aggregateTrans = Transaction("master",firstNodeAddress,[],[],"Genesis Block transaction",0)
-        aggregateTrans.output.append(outputs)
+    def register_node(self, address):
+        """
+        Add a new node to the list of nodes
+        :param address: <str> Address of node. Eg. 'http://192.168.0.5:5000'
+        :return: None
+        """
 
-        genesis_block = Block()
-        genesis_block.prevHash = 0
-        genesis_block.blockIndex = 1
-        genesis_block.transactions = [aggregateTrans]
+        parsed_url = urlparse(address)
+        self.nodes.add(parsed_url.netloc)
 
-        # calculate getNext hash
-        genesis_block.currHash = tool.getNextHash(genesis_block.prevHash,genesis_block.transactions)
-        genesis_block.confirmed = True
-        genesis_block.miner = firstNodeAddress
-        
-        return genesis_block
-        
-    
-    """
-    function for adding a comfirmed block to current chain
-    input: Block obejct, hash256 of this new block
-    return: latest valid block 
-    """
-    def addBlock(self,block):
+    def valid_chain(self, chain):
+        """
+        Determine if a given blockchain is valid
+        :param chain: <list> A blockchain
+        :return: <bool> True if valid, False if not
+        """
 
-        # ADD genesis block
-        if not self.chain:
-            self.chain.append(block)
-            self.currHash = block.currHash
-            for o in block.transactions[0].output:
-                self.unused.append(o)
+        last_block = chain[0]
+        current_index = 1
+
+        while current_index < len(chain):
+            block = chain[current_index]
+            print(f'{last_block}')
+            print(f'{block}')
+            print("\n-----------\n")
+            # Check that the hash of the block is correct
+            if block['previous_hash'] != self.hash(last_block):
+                return False
+
+            # Check that the Proof of Work is correct
+            if not self.valid_proof(last_block['proof'], block['proof']):
+                return False
+
+            last_block = block
+            current_index += 1
+
+        return True
+
+    def resolve_conflicts(self):
+        """
+        This is our Consensus Algorithm, it resolves conflicts
+        by replacing our chain with the longest one in the network.
+        :return: <bool> True if our chain was replaced, False if not
+        """
+
+        neighbours = self.nodes
+        new_chain = None
+
+        # We're only looking for chains longer than ours
+        max_length = len(self.chain)
+
+        # Grab and verify the chains from all the nodes in our network
+        for node in neighbours:
+            response = requests.get(f'http://{node}/chain')
+
+            if response.status_code == 200:
+                length = response.json()['length']
+                chain = response.json()['chain']
+
+                # Check if the length is longer and the chain is valid
+                if length > max_length and self.valid_chain(chain):
+                    max_length = length
+                    new_chain = chain
+
+        # Replace our chain if we discovered a new, valid chain longer than ours
+        if new_chain:
+            self.chain = new_chain
             return True
 
-        # if blockchain contains the block
-        # duplication
-        if block in self.chain:
-            raise Exception(" input block is a duplicated block")
-            return False
+        return False
 
-        if block.blockIndex >= len(self.chain)+2:
-            raise Exception(" This Block is in the future")
-            return False
-    
-        # find out all trans corrsponding to input 
-        # remove input transactions out of unused list
-        for item in block.transactions:
-            for t in item.input:
-                try:
-                    self.unused.remove(t)
-                except ValueError:
-                    raise Exception(" input transaction may not exists")
-                    return False
-            # add output transactions in the unused list
-            for o in item.output:
-                self.unused.append(t)
-            
-        # add block to chain
-        self.chain.append(block)
-        # update currenthash
-        self.currHash = block.currHash
+    def new_block(self, proof, previous_hash=None):
+        """
+        Create a new Block in the Blockchain
+        :param proof: <int> The proof given by the Proof of Work algorithm
+        :param previous_hash: (Optional) <str> Hash of previous Block
+        :return: <dict> New Block
+        """
 
-        return True
-
-    """
-    function for adding new unused transactions
-    input: Transaction object
-    return: current unused transactions
-    """
-    def addUnused(self,trans):
-        self.unused.append(trans)
-        return self.unused
-
-
-    """
-    function for getting whole blockchain
-    input: /
-    return: current whole blockchain
-    """
-    def getBlockChain(self):
-        return self.chain
-
-    """
-    function for getting all unused transactions
-    input: /
-    return: unused transactions list
-    """
-    def getUnused(self):
-        return self.unused
-    
-    """
-    function for getting last block's hash
-    input: /
-    return: last block's hash
-    """
-    def getCurrHash(self):
-        return self.currHash
-
-    
-    """
-    convert blockchain information into json format
-    """
-    def tojson(self):
-        blockchain = {
-            "chain":[x.tojson() for x in self.chain],
-            "unused":[x.tojson() for x in self.unused],
-            "currHash":self.currHash
+        block = {
+            'index': len(self.chain) + 1,
+            'timestamp': time(),
+            'transactions': self.current_transactions,
+            'proof': proof,
+            'previous_hash': previous_hash or self.hash(self.chain[-1]),  #双保险？
         }
-        blockchain = json.dumps(blockchain,sort_keys=True)
-        return blockchain
+
+        # Reset the current list of transactions
+        self.current_transactions = []
+
+        self.chain.append(block)
+        return block
+
+    def new_transaction(self, sender, recipient, amount):
+        """
+        Creates a new transaction to go into the next mined Block
+        :param sender: <str> Address of the Sender
+        :param recipient: <str> Address of the Recipient
+        :param amount: <int> Amount
+        :return: <int> The index of the Block that will hold this transaction
+        """
+
+        self.current_transactions.append({
+            'sender': sender,
+            'recipient': recipient,
+            'amount': amount,
+        })
+
+        return self.last_block['index'] + 1     #获取最后一个block的index，然后加1作为新的block的index
+                                                #each block one transaction? 为什么+1？last_block 的index不是代表自己吗？
+    @property
+    def last_block(self):
+        return self.chain[-1]
+
+    @staticmethod
+    def hash(block):
+        """
+        Creates a SHA-256 hash of a Block
+        :param block: <dict> Block
+        :return: <str>
+        """
+
+        # We must make sure that the Dictionary is Ordered, or we'll have inconsistent hashes
+        block_string = json.dumps(block, sort_keys=True).encode()
+        return hashlib.sha256(block_string).hexdigest()
+
+    def proof_of_work(self, last_proof):
+        """
+        Simple Proof of Work Algorithm:
+         - Find a number p' such that hash(pp') contains leading 4 zeroes, where p is the previous p'
+         - p is the previous proof, and p' is the new proof
+        :param last_proof: <int>
+        :return: <int>
+        """
+
+        proof = 0
+        while self.valid_proof(last_proof, proof) is False:
+            proof += 1
+
+        return proof
+
+    @staticmethod
+    def valid_proof(last_proof, proof):
+        """
+        Validates the Proof: Does hash(last_proof, proof) contain 4 leading zeroes?
+        :param last_proof: <int> Previous Proof
+        :param proof: <int> Current Proof
+        :return: <bool> True if correct, False if not.
+        """
+
+        guess = f'{last_proof}{proof}'.encode()
+        guess_hash = hashlib.sha256(guess).hexdigest()
+        return guess_hash[:4] == "0000"
 
 
+# Instantiate our Node
+app = Flask(__name__)
 
-    """
-    Parse string to self
-    """
-    def parseJson(self, input_str):
-        tmp = json.loads(input_str)
+# Generate a globally unique address for this node
+node_identifier = str(uuid4()).replace('-', '')
 
-        self.currHash = tmp["currHash"]
-
-        self.unused = []
-        for t in tmp["unused"]:
-            tmp_t =Transaction()
-            tmp_t.parseJson(t)
-            self.unused.append(tmp_t)
-
-        self.chain = []
-        for b in tmp["chain"]:
-            tmp_b = Block()
-            tmp_b.parseJson(b)
-            self.chain.append(b)
-
-        return True
+# Instantiate the Blockchain
+blockchain = Blockchain()
 
 
+@app.route('/mine', methods=['GET'])
+def mine():
+    # We run the proof of work algorithm to get the next proof...
+    last_block = blockchain.last_block
+    last_proof = last_block['proof']
+    proof = blockchain.proof_of_work(last_proof)
+
+    # We must receive a reward for finding the proof.
+    # The sender is "0" to signify that this node has mined a new coin.
+    blockchain.new_transaction(
+        sender="0",
+        recipient=node_identifier,
+        amount=1,
+    )
+
+    # Forge the new Block by adding it to the chain
+    previous_hash = blockchain.hash(last_block)
+    block = blockchain.new_block(proof, previous_hash)
+
+    response = {
+        'message': "New Block Forged",
+        'index': block['index'],
+        'transactions': block['transactions'],
+        'proof': block['proof'],
+        'previous_hash': block['previous_hash'],
+    }
+    return jsonify(response), 200
 
 
+@app.route('/transactions/new', methods=['POST'])
+def new_transaction():
+    values = request.get_json()
+    #print(values)
+
+    # Check that the required fields are in the POST'ed data
+    required = ['sender', 'recipient', 'amount']
+    if not all(k in values for k in required):
+        return 'Missing values', 400
+
+    # Create a new Transaction
+    index = blockchain.new_transaction(values['sender'], values['recipient'], values['amount'])
+
+    response = {'message': f'Transaction will be added to Block {index}'}
+    return jsonify(response), 201   #不知道201代表什么，只是一个数字(操作代号?)
+
+
+@app.route('/chain', methods=['GET'])
+def full_chain():
+    response = {
+        'chain': blockchain.chain,
+        'length': len(blockchain.chain),
+    }
+    return jsonify(response), 200   #200 means what?
+
+@app.route('/nodes/register', methods=['POST'])
+def register_nodes():
+    values = request.get_json()
+
+    nodes = values.get('nodes')
+    if nodes is None:
+        return "Error: Please supply a valid list of nodes", 400
+
+    for node in nodes:
+        blockchain.register_node(node)
+
+    response = {
+        'message': 'New nodes have been added',
+        'total_nodes': list(blockchain.nodes),
+    }
+    return jsonify(response), 201
+
+
+@app.route('/nodes/resolve', methods=['GET'])
+def consensus():
+    replaced = blockchain.resolve_conflicts()
+
+    if replaced:
+        response = {
+            'message': 'Our chain was replaced',
+            'new_chain': blockchain.chain
+        }
+    else:
+        response = {
+            'message': 'Our chain is authoritative',
+            'chain': blockchain.chain
+        }
+
+    return jsonify(response), 200
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)      #runs the server on port 5000
