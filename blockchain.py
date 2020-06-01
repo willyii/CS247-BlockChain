@@ -8,8 +8,9 @@ import json
 from block import Block
 from transaction import Transaction
 import hashlib
+import tool
 
-NUM_TRANS_PER_BLOCK = 5
+NUM_TRANS_PER_BLOCK = 1
 
 class BlockChain:
     """
@@ -18,84 +19,88 @@ class BlockChain:
     unused is a lost of all unsed/confirmed transactions
     currHash is the hash value of last block on the chain
     """
-    def __init__(self):
+    def __init__(self,firstNodeAddress):
         self.chain = [] 
         self.unused = [] 
-        self.currHash = 0 
+        self.currHash = 0
+        if not self.addBlock(self.genesisBlock(firstNodeAddress)):
+            raise Exception(" Gensis Block create false")
+
+        
   
+    """
+    Generate a Genesis Block
+    """
+    def genesisBlock(self,firstNodeAddress):
+        # generate a genesisiblock
+        # index:1,  prevHash: 0
+        # with one output transaction
 
-    """
-    function for calculate sha256 
-    input: block as string format which need to be checked 
-    return: sha256 value
-    """
-    def hash_sha256(self,block_string):
-        # hash block
-        # from json to dictionary, sort by key
-        #block_string = json.dumps(block,sort_keys=True).encode('utf-8')
-        hashcode = hashlib.sha256(block_string).hexdigest()
-        return hashcode
-    
-    """
-    function for check validation of the block
-    which requesting for adding to current chain
-    input: block need to be checked 
-    return: validation or not
-    """
-    #class ValidationError(Exception):
-    #    pass
-    
+        # generate output transaction
+        msg = " Genesis Block reward for firstNode"
+        outputs = Transaction("master", firstNodeAddress, [],[], msg, 50)
 
-    def validation(self,block):
-        status = 0
-        #checkBlock = Block()
-        checkBlock = block
-        if checkBlock.blockIndex >= len(self.chain)+2:
-            # this block is in the future
-            status = 0
-            raise Exception(" This Block is in the future")
-            return status
-        return status 
+        # genesis transfer
+        aggregateTrans = Transaction("master",firstNodeAddress,[],[],"Genesis Block transaction",0)
+        aggregateTrans.output.append(outputs)
+
+        genesis_block = Block()
+        genesis_block.prevHash = 0
+        genesis_block.blockIndex = 1
+        genesis_block.transactions = [aggregateTrans]
+
+        # calculate getNext hash
+        genesis_block.currHash = tool.getNextHash(genesis_block.prevHash,genesis_block.transactions)
+        genesis_block.confirmed = True
+        genesis_block.miner = firstNodeAddress
+        
+        return genesis_block
+        
     
     """
-    function for adding a comfirmed block to crrent chain
+    function for adding a comfirmed block to current chain
     input: Block obejct, hash256 of this new block
     return: latest valid block 
     """
-    def addBlock(self,block,newHash):
-        # if complete proofofwork, add to blockchain
-        success = False
-        checkBlock = block
+    def addBlock(self,block):
+
+        # ADD genesis block
+        if not self.chain:
+            self.chain.append(block)
+            self.currHash = block.currHash
+            for o in block.transactions[0].output:
+                self.unused.append(o)
+            return True
+
         # if blockchain contains the block
         # duplication
-        if checkBlock in self.chain:
+        if block in self.chain:
             raise Exception(" input block is a duplicated block")
-            return success
+            return False
 
-        if checkBlock.blockIndex >= len(self.chain)+2:
+        if block.blockIndex >= len(self.chain)+2:
             raise Exception(" This Block is in the future")
-            return success
+            return False
     
-        trans = checkBlock.transactions
         # find out all trans corrsponding to input 
         # remove input transactions out of unused list
-        for item in trans:
+        for item in block.transactions:
             for t in item.input:
-                exists = self.unused.remove(item)
-                if(exists == False): # input trans does not exists
+                try:
+                    self.unused.remove(t)
+                except ValueError:
                     raise Exception(" input transaction may not exists")
-                    return success
+                    return False
             # add output transactions in the unused list
             for o in item.output:
-                self.unused.append(item)
-                
-        # update latest hash in the blockchain
-        self.currHash = newHash
+                self.unused.append(t)
+            
         # add block to chain
         self.chain.append(block)
-        success = True
+        # update currenthash
+        self.currHash = block.currHash
 
-        return success
+        return True
 
     """
     function for adding new unused transactions

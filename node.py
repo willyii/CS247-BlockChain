@@ -4,10 +4,10 @@ from block import Block
 import json
 import time 
 import hashlib
-import tool 
+from tool import getNextHash, valid_proof_of_work, checkValid
 
 
-NUM_TRANS_PER_BLOKC = 5
+NUM_TRANS_PER_BLOCK= 1
 
 
 """
@@ -29,7 +29,6 @@ class Node:
         self.NUM_ZEROS = 1
         # self.WhoIam() """TODO function to broad the self information to other nodes"""
   
-
     """
     Get Nodes infomation from network
     """
@@ -48,9 +47,7 @@ class Node:
         collected_chain = []
 
         if not collected_chain:
-            tmp = BlockChain()
-            # caculate the initial block
-            return tmp
+            return BlockChain(self.address)
 
 
     """
@@ -110,10 +107,12 @@ class Node:
         self.transreviced.append(trans)
         if len(self.transreviced) >= NUM_TRANS_PER_BLOCK:
             new_block = Block()
+            new_block.blockIndex = self.BlockChain.chain[-1].blockIndex + 1
             new_block.prevHash = self.BlockChain.getCurrHash()
             new_block.transactions = self.transreviced.copy()
             self.transreviced = []
             new_block.currHash = getNextHash(new_block.prevHash, new_block.transactions )
+            new_block.zeros = self.NUM_ZEROS
             return new_block
         return None
 
@@ -128,7 +127,7 @@ class Node:
         """TODO handle the sinagture of the sender""" 
         trans = Transaction()
         trans.parseJson(trans_str)
-        new_block = nextBlock(trans)
+        new_block = self.nextBlock(trans)
         
         # Do not generate Block
         if not new_block:
@@ -136,7 +135,7 @@ class Node:
  
         """TODO Broad New Block """
 
-        return True
+        return new_block # Temporae
 
 
     """
@@ -149,18 +148,20 @@ class Node:
 
         new_block = Block()
         new_block.parseJson(block_str)
-
         if new_block.confirmed:# if confirmed by someone, check and add block
-            if proof_of_work(new_block):
+            if valid_proof_of_work(new_block):
                 self.BlockChain.addBlock(new_block) 
                 """TODO stop the mine thread"""
             else:
-                pass
+                raise Exception("Hey this Block's Hash is not valid")
+                return False
 
         elif self.miner_indicator:
-            pass
-            """TODO start thread to mine"""
-        
+            print("Hey this is miner, I'm going to mine")
+            return self.mine(new_block)
+            """TODO start thread to mine and broad mined block"""
+        else:
+            print("Hey this is unconfirmed block , but I am not miner, so I gonna miss it")
         return True
 
 
@@ -188,50 +189,54 @@ class Node:
     """
     If this node is a miner, it should always calling this function to mine new block 
     """
-
     def mine(self, block):
-        nonce = proof_of_work(self, blcok.currHash, block.zeros)
+        nonce = self.proof_of_work(block.currHash, block.zeros)
 
         if nonce < 0:
             return
 
-        block.confirmed = true
+        block.miner = self.address
+        block.confirmed = True
         block.nonce = nonce
-
-
+        return block
 
     def proof_of_work(self, block_hash, zeros_num):
-        '''
+        """
         Simple Proof of Work Algorithm:
          - Find a number p' such that hash(pp') contains leading 4 zeroes, where p is the previous p'
          - p is the previous proof, and p' is the new hash
-        :param block_hash: <int>
-        :param zeros_num: <int>
-        :return:
-        '''
-
-        flag = 0
-        nonce = 0
-        guess = f'{block_hash}{nonce}'.encode()
-        guess_hash = hashlib.sha256(guess).hexdigest()
-        for i in range(zeros_num):
-            if guess_hash[i] == "0":
-                flag = flag + 1
-
-        while flag != zeros_num:
-            flag = 0
+        :param last_proof: <int>
+        :return: <int>
+        """
+        pass_flag = False
+        nonce = -1
+        while(not pass_flag):
             nonce += 1
-            guess = f'{block_hash}{nonce}'.encode()
-            guess_hash = hashlib.sha256(guess).hexdigest()
-            for i in range(zeros_num):
-                if guess_hash[i] == "0":
-                    flag = flag + 1
-        print("guess_hash=", guess_hash)
-        print("guess_hash[]=", guess_hash[:zeros_num])
+            guess_hash = hashlib.sha256(str(block_hash).encode("utf-8") + str(nonce).encode("utf-8")).hexdigest()
+            pass_flag = checkValid(guess_hash, zeros_num)
         return nonce
 
-    nonce = proof_of_work(100, 3)
-    print("nonce=", nonce)
+
+        # flag = 0
+        # nonce = 0
+        # guess = f'{block_hash}{nonce}'.encode()
+        # guess_hash = hashlib.sha256(guess).hexdigest()
+        # for i in range(zeros_num):
+        #     if guess_hash[i] == "0":
+        #         flag = flag + 1
+        # 
+        # while flag != zeros_num:
+        #     flag = 0
+        #     nonce += 1
+        #     guess = f'{block_hash}{nonce}'.encode()
+        #     guess_hash = hashlib.sha256(guess).hexdigest()
+        #     for i in range(zeros_num):
+        #         if guess_hash[i] == "0":
+        #             flag = flag + 1
+        # print("guess_hash=", guess_hash)
+        # print("guess_hash[]=", guess_hash[:zeros_num])
+        # return nonce
+
 
     
     """
