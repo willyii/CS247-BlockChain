@@ -78,7 +78,7 @@ if __name__ == "__main__":
     status = testnode.handleBlock(confirmed_block)
     if status:
         print("Handle Confirmed Block Test Pass")
-    print(testnode.tojson(1))
+    print(testnode.tojson(1).strip("\\"))
 
 
 
