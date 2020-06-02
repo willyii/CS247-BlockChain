@@ -10,7 +10,7 @@ import requests
 import random
 
 
-NUM_TRANS_PER_BLOCK= 1
+NUM_TRANS_PER_BLOCK= 2
 
 
 """
@@ -128,7 +128,7 @@ class Node:
             new_block.currHash = getNextHash(new_block.prevHash, new_block.transactions )
             new_block.zeros = self.NUM_ZEROS
             return new_block
-        return None
+        return False
 
 
 

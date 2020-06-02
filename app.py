@@ -23,7 +23,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def hello():
-    test_tran = node.sendCoin(to="http://0.0.0.0:100",value =50)
+    test_tran = node.sendCoin(to="http://0.0.0.0:100",value =20)
     return json.loads(node.tojson(1))
 
 
