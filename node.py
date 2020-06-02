@@ -7,6 +7,7 @@ import time
 import hashlib
 from tool import getNextHash, valid_proof_of_work, checkValid
 import requests
+import random
 
 
 NUM_TRANS_PER_BLOCK= 1
@@ -28,7 +29,7 @@ class Node:
         self.private_key = self.generate_key()
         self.nodes = self.getNodes() 
         self.BlockChain = self.getChain() 
-        self.NUM_ZEROS = 6
+        self.NUM_ZEROS = 5
         self.threadjob = False
         # self.WhoIam() """TODO function to broad the self information to other nodes"""
   
@@ -37,7 +38,7 @@ class Node:
     """
     def getNodes(self):
         """TODO Collect node info from other nodes"""
-        nodes = [{"address": "http://0.0.0.0:100"}]#,{"address": "http://0.0.0.0:101"}]
+        nodes = [{"address": "http://0.0.0.0:100"},{"address": "http://0.0.0.0:5000"}]
         return nodes 
         
 
@@ -50,21 +51,20 @@ class Node:
         # select best train
         for n in self.nodes:
             try:
-                if n.address == self.address:# skip self
+                if n["address"] == self.address:# skip self
                     continue
                 r = requests.get(url= n["address"] + "/getChain")
                 if r.status_code == 200: # get chain from others
                     new_chain = BlockChain(firstNodeAddress = "tmp")
-                    new_chain.parseJson(r.data)
+                    new_chain.parseJson(r.content)
                     if len(new_chain.chain) >= len(best_chain.chain):
-                        best_chain = new_chain.copy()
+                        best_chain = new_chain
             except:
+                print("an error in get chain")
                 pass
         return best_chain        
-                
-                
 
-
+    
 
     """
     Generate the key randomly for this node
@@ -99,7 +99,7 @@ class Node:
             return False
 
         """ Generate outputlist"""
-        msg="Cao ni ma de shou qian " + to + str(time.time()) + str(value)
+        msg="Cao ni ma de shou qian "#   + to + str(time.time()) + str(value)
         new_tran = Transaction(self.address, to=to, inlist=inputlist, outlist =[], header = msg, value = value)
         outputlist.append(new_tran)
 
@@ -167,6 +167,7 @@ class Node:
 
         if new_block.confirmed:# if confirmed by someone, check and add block
             if valid_proof_of_work(new_block):
+                print("Someone done before me, I'm going to stop")
                 self.threadjob = False
                 self.BlockChain.addBlock(new_block) 
             else:
@@ -178,7 +179,6 @@ class Node:
                 print("This is miner, I should mine, but I'm already doing ")
                 return True
             print("Hey this is miner, I'm going to mine")
-            """New Thread to mine and broadBlock"""
             self.threadjob = True
             t = Thread(target=self.mine, args = (new_block,))
             t.start()
@@ -222,7 +222,7 @@ class Node:
     def broadTrans(self, trans):
         for n in self.nodes:
             try:
-                r = requests.post(url=n["address"]+"/handleTrans", data = trans.tojson())
+                r = requests.post(url=n["address"]+"/handleTrans", data = trans.tojson().encode())
             except:
                 pass
 
@@ -233,7 +233,7 @@ class Node:
     def boradBlock(self, b ):
         for n in self.nodes:
             try:
-                r = requests.post(url=n["address"]+"/handleBlock", data = b.tojson())
+                r = requests.post(url=n["address"]+"/handleBlock", data = b.tojson().encode())
             except:
                 pass
 
@@ -245,14 +245,14 @@ class Node:
         print("===========================Mining coin in thread======================")
         nonce = self.proof_of_work(block.currHash, block.zeros)
 
-        if nonce < 0:
+        if nonce < 0 or not self.threadjob:
             return
 
         block.miner = self.address
         block.confirmed = True
         block.nonce = nonce
         print("==========================I mined out===============")
-        print(block.tojson())
+        self.threadjob = False
         self.boradBlock(block)
 
     def proof_of_work(self, block_hash, zeros_num):
@@ -264,8 +264,8 @@ class Node:
         :return: <int>
         """
         pass_flag = False
-        nonce = -1
-        while(not pass_flag):
+        nonce = random.randint(0,1000)
+        while(not pass_flag and self.threadjob):
             nonce += 1
             guess_hash = hashlib.sha256(str(block_hash).encode("utf-8") + str(nonce).encode("utf-8")).hexdigest()
             pass_flag = checkValid(guess_hash, zeros_num)
@@ -313,4 +313,4 @@ class Node:
               "name": self.name,
               "public key": self.public_key
             }
-        return json.dumps(node_info, sort_keys = True)
+        return json.dumps(node_info, sort_keys = True, ensure_ascii=False)

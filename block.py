@@ -34,7 +34,7 @@ class Block:
             "zeros": self.zeros,
             "nonce": self.nonce
         }
-        block_str = json.dumps(block, sort_keys=True)
+        block_str = json.dumps(block, sort_keys=True, ensure_ascii=False)
         return block_str
 
 
@@ -43,7 +43,6 @@ class Block:
     """ 
     def parseJson(self, input_str):
         tmp = json.loads(input_str)
-
         self.blockIndex = tmp["blockIndex"]
         self.currHash = tmp["currentHash"]
         self.prevHash = tmp["prevHash"]
@@ -51,7 +50,6 @@ class Block:
         self.zeros = tmp["zeros"]
         self.nonce = tmp["nonce"]
         self.confirmed = tmp["confirmed"]
-
         self.transactions = []
         for t in tmp["transactions"]:
             tmp_t = Transaction()

@@ -18,8 +18,8 @@ class Transaction:
         self.output = outlist
         self.header = header
         self.value = value
-        self.timestamp = 0 # Test
-        # self.timestamp = time()SS
+        # self.timestamp = 0 # Test
+        self.timestamp = time()
 
 
     """
@@ -35,7 +35,7 @@ class Transaction:
             "value": self.value,
             "timestamp": self.timestamp
         }
-        transaction = json.dumps(transaction, sort_keys = True)
+        transaction = json.dumps(transaction, sort_keys = True, ensure_ascii=False)
         return transaction
 
         
@@ -44,7 +44,6 @@ class Transaction:
     """ 
     def parseJson(self, input_str):
         tmp = json.loads(input_str)
-
         self.f = tmp["from"]
         self.to = tmp["to"]
         self.header = tmp["header"]
@@ -61,6 +60,7 @@ class Transaction:
             tmp_t = Transaction()
             tmp_t.parseJson(t)
             self.output.append(tmp_t)
+
 
 
     def __eq__(self, other):
