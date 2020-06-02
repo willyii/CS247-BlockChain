@@ -28,7 +28,7 @@ class Node:
         self.private_key = self.generate_key()
         self.nodes = self.getNodes() 
         self.BlockChain = self.getChain() 
-        self.NUM_ZEROS = 4
+        self.NUM_ZEROS = 6
         self.threadjob = False
         # self.WhoIam() """TODO function to broad the self information to other nodes"""
   
@@ -252,6 +252,7 @@ class Node:
         block.confirmed = True
         block.nonce = nonce
         print("==========================I mined out===============")
+        print(block.tojson())
         self.boradBlock(block)
 
     def proof_of_work(self, block_hash, zeros_num):

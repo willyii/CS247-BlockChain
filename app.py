@@ -31,6 +31,7 @@ def hello():
 @app.route("/handleBlock", methods=["POST"])
 def handleBlock():
     block_str = request.data
+    print(block_str)
     if node.handleBlock(block_str):
         d = {"message":"Good Job"}
         return jsonify(d), 200
