@@ -246,15 +246,18 @@ class Node:
         nonce = self.proof_of_work(block.currHash, block.zeros)
 
         if nonce < 0 or not self.threadjob:
-            return
+            return False
 
         block.miner = self.address
         block.confirmed = True
         block.nonce = nonce
+        if not self.threadjob:
+            return False
         print("==========================I mined out===============")
-        self.threadjob = False
         self.boradBlock(block)
         # self.broadTrans(self.bonusTrans())
+        self.threadjob = False
+        return True
 
     def proof_of_work(self, block_hash, zeros_num):
         """
