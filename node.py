@@ -10,7 +10,7 @@ import requests
 import random
 
 
-NUM_TRANS_PER_BLOCK= 2
+NUM_TRANS_PER_BLOCK= 1
 
 
 """
@@ -254,6 +254,7 @@ class Node:
         print("==========================I mined out===============")
         self.threadjob = False
         self.boradBlock(block)
+        self.broadTrans(self.bonusTrans())
 
     def proof_of_work(self, block_hash, zeros_num):
         """

@@ -25,7 +25,7 @@ app = Flask(__name__)
 def hello():
     test_tran = node.sendCoin(to="http://0.0.0.0:100",value =20)
     return json.loads(node.tojson(1))
-
+    # return "Balance of this node: " + str(node.BlockChain.getBalance(node.address))
 
 @app.route("/getChain", methods = ["GET"])
 def broadChain():
