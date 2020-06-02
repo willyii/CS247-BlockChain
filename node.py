@@ -291,7 +291,12 @@ class Node:
         # print("guess_hash=", guess_hash)
         # print("guess_hash[]=", guess_hash[:zeros_num])
         # return nonce
+    def bonusTrans(self):
+        msg = "Genesis Block reward for firstNode"
+        outputs = Transaction("master", self.address, [], [], msg, 50)
+        aggregateTrans = Transaction("master", self.address, [], [outputs], msg, 50)
 
+        return aggregateTrans
 
     
     """
