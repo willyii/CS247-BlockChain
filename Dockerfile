@@ -1,7 +1,9 @@
 # this is an official Python runtime, used as the parent image
 FROM python:3.7-slim
 
-COPY ./requirements.txt /app/requirements.txt
+#COPY ./requirements.txt /app/requirements.txt
+
+COPY ./* /app/
 
 # set the working directory in the container to /app
 WORKDIR /app
@@ -13,10 +15,9 @@ ADD . /app
 RUN pip install --trusted-host pypi.python.org -r requirements.txt
 
 # unblock port 80 for the Flask app to run on
-EXPOSE 80
+EXPOSE 5000
 
-ENTRYPOINT ["python"]
 
 # execute the Flask app
-CMD ["testFlask.py"]
+CMD ["python", "app.py", "--port", "5000"]
 

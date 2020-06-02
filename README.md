@@ -35,20 +35,18 @@
   - Move mine function in thread level
   - add new function in app.py to generate random transaction
 
-- ***USAGE***:
-  - In project fold run
-  
-  '''
-    python3 testFlask.py --port 101 -t 0
-    python3 testFlask.py --port 100 -t 1
-  '''
-  
-  to initialize two web application, and second one will send message to first one every 10s. You will see the result in terminal 
-  
-  - In project fold run
-  
-  '''
-    python3 app.py --port 100
-  '''
-  
-  to initialize a web application with node. Then goto ***http://0.0.0.0:100/*** in browse. It will trigger a new transaction and broadcast new block and mine and add to self. It will return the node information in browser. 
+## 2nd update, June 1, 2020:
+- ***Done***:
+  - Move mine function into thread
+  - Finishe two node communication, done a simple pass in app.py
+
+- ***TODO***:
+  - new function in app.py to generate random transaction 
+  - maybe three or more nodes?
+  - bounce coin for miner who find it out 
+
+- ***Usage***
+  - Enter project folder 
+  - Use command "python3 app.py --port 5000" to start one node. this node will have 50 coins as initial
+  - Use command "python3 app.py --port 100" to start another node in other terminal.
+  - Visit http://0.0.0.0:5000/ to trigger one transaction. In this transaction, 5000 will send 50 coins to 100. Then every guys starts to mine. You will see which one will mined out the block in terminal

@@ -41,8 +41,8 @@ class BlockChain:
         outputs = Transaction("master", firstNodeAddress, [],[], msg, 50)
 
         # genesis transfer
-        aggregateTrans = Transaction("master",firstNodeAddress,[],[],"Genesis Block transaction",0)
-        aggregateTrans.output.append(outputs)
+        aggregateTrans = Transaction("master",firstNodeAddress,[],[outputs],"Genesis Block transaction",0)
+        # aggregateTrans.output.append(outputs)
 
         genesis_block = Block()
         genesis_block.prevHash = 0
@@ -93,7 +93,7 @@ class BlockChain:
                     return False
             # add output transactions in the unused list
             for o in item.output:
-                self.unused.append(t)
+                self.unused.append(o)
             
         # add block to chain
         self.chain.append(block)
@@ -146,7 +146,7 @@ class BlockChain:
             "unused":[x.tojson() for x in self.unused],
             "currHash":self.currHash
         }
-        blockchain = json.dumps(blockchain,sort_keys=True)
+        blockchain = json.dumps(blockchain,sort_keys=True, ensure_ascii=False)
         return blockchain
 
 
@@ -155,21 +155,22 @@ class BlockChain:
     Parse string to self
     """
     def parseJson(self, input_str):
+
         tmp = json.loads(input_str)
 
         self.currHash = tmp["currHash"]
-
         self.unused = []
         for t in tmp["unused"]:
             tmp_t =Transaction()
             tmp_t.parseJson(t)
             self.unused.append(tmp_t)
+        
 
         self.chain = []
         for b in tmp["chain"]:
             tmp_b = Block()
             tmp_b.parseJson(b)
-            self.chain.append(b)
+            self.chain.append(tmp_b)
 
         return True
 
