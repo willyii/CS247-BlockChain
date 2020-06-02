@@ -258,6 +258,7 @@ class Node:
         self.broadTrans(self.bonusTrans())
         '''
         #'''
+        #check whether other miner have updated the blockchain or not
         if block.prevHash == self.BlockChain.getCurrHash():
             print("==========================I mined out===============")
             self.threadjob = False
