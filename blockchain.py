@@ -103,6 +103,25 @@ class BlockChain:
         return True
 
     """
+    function for return balance for input address
+    return: balance
+    """
+    def getBalance(self,address):
+        # search unused transaction 
+        # find coorsponding address
+        balance = 0
+        for trans in self.unused:
+            if  trans.to == address:
+                balance += trans.value
+            if trans.f == address:
+                balance -= trans.value
+        if balance < 0:
+            print("Balance error, balance is negative",balance)
+        
+        return balance
+
+
+    """
     function for adding new unused transactions
     input: Transaction object
     return: current unused transactions
