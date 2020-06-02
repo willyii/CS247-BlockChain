@@ -48,3 +48,15 @@ def getNextHash(prevHash,transList):
     nextHash = hashlib.sha256(prevHash + trans_str).hexdigest()
     return nextHash
 
+
+"""
+compare previous hash and currHash
+if equals, return true
+"""
+'''
+def checkHash(prevHash, currHash):
+    if prevHash == currHash:
+        return True
+    else:
+        return False
+'''

@@ -246,15 +246,28 @@ class Node:
         nonce = self.proof_of_work(block.currHash, block.zeros)
 
         if nonce < 0 or not self.threadjob:
-            return
+            return False
 
         block.miner = self.address
         block.confirmed = True
         block.nonce = nonce
+        '''
         print("==========================I mined out===============")
         self.threadjob = False
         self.boradBlock(block)
         self.broadTrans(self.bonusTrans())
+        '''
+        #'''
+        if block.prevHash == self.BlockChain.getCurrHash():
+            print("==========================I mined out===============")
+            self.threadjob = False
+            self.boradBlock(block)
+            self.broadTrans(self.bonusTrans())
+            return True
+        else:
+            print("some node faster than me")
+            return False
+        #'''
 
     def proof_of_work(self, block_hash, zeros_num):
         """
