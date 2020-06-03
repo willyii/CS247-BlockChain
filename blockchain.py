@@ -23,6 +23,7 @@ class BlockChain:
         self.chain = [] 
         self.unused = [] 
         self.currHash = 0
+        self.trans = []
         if not self.addBlock(self.genesisBlock(firstNodeAddress)):
             raise Exception(" Gensis Block create false")
 
@@ -70,6 +71,7 @@ class BlockChain:
             self.currHash = block.currHash
             for o in block.transactions[0].output:
                 self.unused.append(o)
+            self.trans += block.transactions[0].output
             return True
 
         # if blockchain contains the block
@@ -99,6 +101,8 @@ class BlockChain:
         self.chain.append(block)
         # update currenthash
         self.currHash = block.currHash
+        for tran in block.transactions:
+            self.trans += tran.output
 
         return True
 
@@ -110,7 +114,7 @@ class BlockChain:
         # search unused transaction 
         # find coorsponding address
         balance = 0
-        for trans in self.unused:
+        for trans in self.trans:
             if  trans.to == address:
                 balance += trans.value
             if trans.f == address:
@@ -163,7 +167,8 @@ class BlockChain:
         blockchain = {
             "chain":[x.tojson() for x in self.chain],
             "unused":[x.tojson() for x in self.unused],
-            "currHash":self.currHash
+            "currHash":self.currHash,
+            "trans": [x.tojson() for x in self.trans]
         }
         blockchain = json.dumps(blockchain,sort_keys=True, ensure_ascii=False)
         return blockchain
@@ -190,6 +195,12 @@ class BlockChain:
             tmp_b = Block()
             tmp_b.parseJson(b)
             self.chain.append(tmp_b)
+
+        self.trans = []
+        for t in tmp["trans"]:
+            tmp_t = Transaction()
+            tmp_t.parseJson(t)
+            self.trans.append(tmp_t)
 
         return True
 

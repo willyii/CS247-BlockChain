@@ -38,7 +38,11 @@ class Node:
     """
     def getNodes(self):
         """TODO Collect node info from other nodes"""
-        nodes = [{"address": "http://0.0.0.0:100"},{"address": "http://0.0.0.0:5000"}]
+        nodes = [{"address": "http://0.0.0.0:100"}
+                ,{"address": "http://0.0.0.0:200"}
+                ,{"address": "http://0.0.0.0:300"}
+                ,{"address": "http://0.0.0.0:400"}
+                ,{"address": "http://0.0.0.0:500"}]
         return nodes 
         
 
@@ -55,7 +59,7 @@ class Node:
                     continue
                 r = requests.get(url= n["address"] + "/getChain")
                 if r.status_code == 200: # get chain from others
-                    new_chain = BlockChain(firstNodeAddress = "tmp")
+                    new_chain = BlockChain(firstNodeAddress = self.address)
                     new_chain.parseJson(r.content)
                     if len(new_chain.chain) >= len(best_chain.chain):
                         best_chain = new_chain
@@ -80,6 +84,10 @@ class Node:
     value: amount of coin I will send
     """
     def sendCoin(self, to="", value=0):
+        if self.BlockChain.getBalance(self.address)<1:
+            print("Do not have enough money")
+            return False
+
 
         coin = 0
         inputlist = []
@@ -99,7 +107,7 @@ class Node:
             return False
 
         """ Generate outputlist"""
-        msg="Cao ni ma de shou qian "#   + to + str(time.time()) + str(value)
+        msg="Cao ni ma de shou qian " + str(to) + " " + str(time.time())+" " + str(value)
         new_tran = Transaction(self.address, to=to, inlist=inputlist, outlist =[], header = msg, value = value)
         outputlist.append(new_tran)
 
@@ -111,7 +119,7 @@ class Node:
         msg = "I, "+ str(self.address) + ", going to send money to " + str(to) + " money:" + str(value)
         send_trans = Transaction(self.address, to, inputlist, outputlist, msg, value = 0)
         self.broadTrans(send_trans)
-        return True
+        return msg
   
     """
     When get new transaction, add it to list. If bigger than threshold, wrap as block and broadcast
@@ -197,6 +205,7 @@ class Node:
             return False
         # check if the past block   
         if block.blockIndex <= self.BlockChain.chain[-1].blockIndex:
+            self.getChain()
             print("Block pos not valid")
             return False
         # Check if it is future blokc
@@ -308,13 +317,17 @@ class Node:
     """
     def tojson(self, debug = 0):
         if debug:
+            ts = [{"from":x.f, "to":x.to, "value":x.value} for x in self.BlockChain.trans]
             node_info = {
               "address": self.address,
               "name": self.name,
               "miner": self.miner_indicator,
               "public key": self.public_key,
               "private key": self.private_key,
-              "BlockChain": self.BlockChain.tojson()
+              "BlockChain": len(self.BlockChain.chain),
+              "Balance": self.BlockChain.getBalance(self.address),
+              "Unused": len(self.BlockChain.unused),
+              "trans": ts
             }
         else:
             node_info = {

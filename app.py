@@ -4,27 +4,24 @@ import time
 import json
 from threading import Thread
 from node import Node
-
-def sendFuckMessage():
-    
-    for i in range(100):
-        d = {
-            "message": "caonimabi"
-        }
-        r = requests.post("http://0.0.0.0:101/testpost", data = json.dumps(d))
-        if r.status_code!=200:
-            print("jia de IP cao ni ma r=: ", r)
-        else:
-            print("This is response message: ", r.json()["message"])
-        time.sleep(10)
+import random
 
 
 app = Flask(__name__)
 
 @app.route('/')
 def hello():
-    test_tran = node.sendCoin(to="http://0.0.0.0:100",value =20)
-    return json.loads(node.tojson(1))
+    to = node.address
+    while(to == node.address and node.nodes != []):
+        to = random.choice(node.nodes)["address"]
+    value = random.uniform(0.001, node.BlockChain.getBalance(node.address))
+    # trans_message = node.sendCoin(to="http://0.0.0.0:200",value =40)
+    trans_message = node.sendCoin(to=to,value =value)
+    d = {
+        "message": trans_message,
+        "node_info": json.loads(node.tojson(1))
+    }
+    return jsonify(d), 200
     # return "Balance of this node: " + str(node.BlockChain.getBalance(node.address))
 
 @app.route("/getChain", methods = ["GET"])
@@ -42,7 +39,8 @@ def handleBlock():
         d = {"message":"Good Job"}
         return jsonify(d), 200
     else:
-        return 500
+        d = {"message":"Not Good"}
+        return jsonify(d), 500
 
 @app.route("/handleTrans", methods=["POST"])
 def handleTrans():
@@ -65,5 +63,5 @@ if __name__ == "__main__":
 
     address = "http://0.0.0.0:"+ str(port)
 
-    node = Node(address =address, name = "mother fucker", min_ind =1)
+    node = Node(address =address, name = str(port), min_ind =1)
     app.run(port=port,debug=True,host='0.0.0.0')

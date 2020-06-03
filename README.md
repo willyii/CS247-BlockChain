@@ -45,8 +45,23 @@
   - maybe three or more nodes?
   - bounce coin for miner who find it out 
 
-- ***Usage***
-  - Enter project folder 
-  - Use command "python3 app.py --port 5000" to start one node. this node will have 50 coins as initial
-  - Use command "python3 app.py --port 100" to start another node in other terminal.
-  - Visit http://0.0.0.0:5000/ to trigger one transaction. In this transaction, 5000 will send 50 coins to 100. Then every guys starts to mine. You will see which one will mined out the block in terminal
+## June 2, 2020:
+- ***Done***:
+  - Random transaction function
+  - bonus transaction for miner 
+  - Support more than two nodes
+  - Banlance feature
+
+- ***TODO***:
+  - Singature
+  - increase the number of transaction in each block when length of chain up to 100 or higher
+  - PPT and report
+
+- ***Usage***:
+  - Enter the project folder
+  - Using command ""./start.sh"". It will start 5 nodes with ip 0.0.0.0 and port 100, 200, 300, 400, 500
+  - You can visit http://0.0.0.0:+prot, like http://0.0.0.0:400/ to see the status of this node. If this node have balance more than 1. It will trigger a transaction to random node with random money
+  - If you see the false in "message", that means have problem in get random transaction. In most time, it due to lack of balance 
+  - Use command ""ps"" to find your process and use command ""kill"" to kill them. The output of the nodes are in no*.log file
+  - Good Luck
+
