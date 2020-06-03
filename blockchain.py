@@ -86,15 +86,15 @@ class BlockChain:
     
         # find out all trans corrsponding to input 
         # remove input transactions out of unused list
-        for item in block.transactions:
-            for o in item.output:
-                self.unused.append(o)
-            for t in item.input:
-                try:
-                    self.unused.remove(t)
-                except ValueError:
-                    raise Exception(" input transaction may not exists")
-                    return False
+        # for item in block.transactions:
+        #     for o in item.output:
+        #         self.unused.append(o)
+        #     for t in item.input:
+        #         try:
+        #             self.unused.remove(t)
+        #         except ValueError:
+        #             raise Exception(" input transaction may not exists")
+        #             return False
             # add output transactions in the unused list
             
         # add block to chain

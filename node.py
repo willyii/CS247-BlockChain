@@ -10,7 +10,7 @@ import requests
 import random
 
 
-NUM_TRANS_PER_BLOCK= 1
+NUM_TRANS_PER_BLOCK= 2
 
 
 """
@@ -42,7 +42,8 @@ class Node:
                 ,{"address": "http://0.0.0.0:200"}
                 ,{"address": "http://0.0.0.0:300"}
                 ,{"address": "http://0.0.0.0:400"}
-                ,{"address": "http://0.0.0.0:500"}]
+                ,{"address": "http://0.0.0.0:500"}
+                ]
         return nodes 
         
 
@@ -150,6 +151,15 @@ class Node:
         trans = Transaction()
         trans.parseJson(trans_str)
         new_block = self.nextBlock(trans)
+        for item in trans:
+            for o in item.output:
+                self.BlockChain.unused.append(o)
+            for t in item.input:
+                try:
+                    self.BlockChain.unused.remove(t)
+                except ValueError:
+                    raise Exception(" input transaction may not exists")
+                    return False
         
         # Do not generate Block
         if not new_block:
