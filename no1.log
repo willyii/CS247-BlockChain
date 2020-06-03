@@ -1,0 +1,15 @@
+an error in get chain
+an error in get chain
+an error in get chain
+an error in get chain
+ * Serving Flask app "app" (lazy loading)
+ * Environment: production
+   WARNING: Do not use the development server in a production enviroTraceback (most recentTraceback (most recent call last):
+  File "aTraceback (most recent call last):
+  File "app.py", line 67, in <module>
+    app.run(port=port,debug=True,host='0.0.0.0')
+  File "/usr/local/lib/python3.7/site-packages/flask/app.py", line 941, in run
+    run_simple(host, port, self, **options)
+  File "/usr/local/lib/python3.7/site-packages/werkzeug/serving.py", line 988, in run_simple
+    s.bind(server_address)
+OSError: [Errno 48] Address already in use

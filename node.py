@@ -118,6 +118,9 @@ class Node:
             outputlist.append(new_tran)
 
         msg = "I, "+ str(self.address) + ", going to send money to " + str(to) + " money:" + str(value)
+    
+        self.BlockChain.unused.append(new_tran)
+        
         send_trans = Transaction(self.address, to, inputlist, outputlist, msg, value = 0)
         self.broadTrans(send_trans)
         return msg
@@ -151,15 +154,15 @@ class Node:
         trans = Transaction()
         trans.parseJson(trans_str)
         new_block = self.nextBlock(trans)
-        for item in trans:
-            for o in item.output:
-                self.BlockChain.unused.append(o)
-            for t in item.input:
-                try:
-                    self.BlockChain.unused.remove(t)
-                except ValueError:
-                    raise Exception(" input transaction may not exists")
-                    return False
+        #for item in trans.input:
+        #     for o in item.output:
+        #         self.BlockChain.unused.append(o)
+        for t in trans.input:
+            try:
+                self.BlockChain.unused.remove(t)
+            except ValueError:
+                raise Exception(" input transaction may not exists")
+                return False
         
         # Do not generate Block
         if not new_block:
