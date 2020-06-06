@@ -116,7 +116,7 @@ class Node:
             new_tran = Transaction(self.address, self.address, inlist= inputlist, outlist=[], header=msg, value=(coin-value))
             outputlist.append(new_tran)
 
-        msg = "I, "+ str(self.address) + ", going to send money to " + str(to) + " money:" + str(value)
+        msg = "I'm going to send money to " + str(to) + ". value:" + str(value)
         send_trans = Transaction(self.address, to, inputlist, outputlist, msg, value = 0)
         self.broadTrans(send_trans)
         return msg

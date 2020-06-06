@@ -7,31 +7,18 @@
  * Restarting with stat
  * Debugger is active!
  * Debugger PIN: 459-031-127
-127.0.0.1 - - [02/Jun/2020 23:18:53] "[37mPOST /handleBlock HTTP/1.1[0m" 200 -
-127.0.0.1 - - [02/Jun/2020 23:18:53] "[37mPOST /handleBlock HTTP/1.1[0m" 200 -
-127.0.0.1 - - [02/Jun/2020 23:18:53] "[37mPOST /handleBlock HTTP/1.1[0m" 200 -
-127.0.0.1 - - [02/Jun/2020 23:18:53] "[37mPOST /handleBlock HTTP/1.1[0m" 200 -
-127.0.0.1 - - [02/Jun/2020 23:18:54] "[37mPOST /handleBlock HTTP/1.1[0m" 200 -
-127.0.0.1 - - [02/Jun/2020 23:18:54] "[37mPOST /handleTrans HTTP/1.1[0m" 200 -
-127.0.0.1 - - [02/Jun/2020 23:18:59] "[37mPOST /handleBlock HTTP/1.1[0m" 200 -
-127.0.0.1 - - [02/Jun/2020 23:19:14] "[37mPOST /handleBlock HTTP/1.1[0m" 200 -
-127.0.0.1 - - [02/Jun/2020 23:19:14] "[37mPOST /handleBlock HTTP/1.1[0m" 200 -
-127.0.0.1 - - [02/Jun/2020 23:19:14] "[37mPOST /handleBlock HTTP/1.1[0m" 200 -
-127.0.0.1 - - [02/Jun/2020 23:19:14] "[37mPOST /handleBlock HTTP/1.1[0m" 200 -
-127.0.0.1 - - [02/Jun/2020 23:19:14] "[37mPOST /handleBlock HTTP/1.1[0m" 200 -
-127.0.0.1 - - [02/Jun/2020 23:19:14] "[37mPOST /handleTrans HTTP/1.1[0m" 200 -
-127.0.0.1 - - [02/Jun/2020 23:19:19] "[37mPOST /handleBlock HTTP/1.1[0m" 200 -
-127.0.0.1 - - [02/Jun/2020 23:20:34] "[37mPOST /handleBlock HTTP/1.1[0m" 200 -
-127.0.0.1 - - [02/Jun/2020 23:20:34] "[37mPOST /handleBlock HTTP/1.1[0m" 200 -
-127.0.0.1 - - [02/Jun/2020 23:20:34] "[37mPOST /handleBlock HTTP/1.1[0m" 200 -
-127.0.0.1 - - [02/Jun/2020 23:20:35] "[37mPOST /handleBlock HTTP/1.1[0m" 200 -
-127.0.0.1 - - [02/Jun/2020 23:20:35] "[37mPOST /handleBlock HTTP/1.1[0m" 200 -
-127.0.0.1 - - [02/Jun/2020 23:20:35] "[37mPOST /handleTrans HTTP/1.1[0m" 200 -
-127.0.0.1 - - [02/Jun/2020 23:20:36] "[37mPOST /handleBlock HTTP/1.1[0m" 200 -
-127.0.0.1 - - [02/Jun/2020 23:21:38] "[37mPOST /handleBlock HTTP/1.1[0m" 200 -
-127.0.0.1 - - [02/Jun/2020 23:21:38] "[37mPOST /handleBlock HTTP/1.1[0m" 200 -
-127.0.0.1 - - [02/Jun/2020 23:21:39] "[37mPOST /handleBlock HTTP/1.1[0m" 200 -
-127.0.0.1 - - [02/Jun/2020 23:21:39] "[37mPOST /handleBlock HTTP/1.1[0m" 200 -
-127.0.0.1 - - [02/Jun/2020 23:21:39] "[37mPOST /handleBlock HTTP/1.1[0m" 200 -
-127.0.0.1 - - [02/Jun/2020 23:21:39] "[37mPOST /handleTrans HTTP/1.1[0m" 200 -
-127.0.0.1 - - [02/Jun/2020 23:21:48] "[37mPOST /handleBlock HTTP/1.1[0m" 200 -
+127.0.0.1 - - [04/Jun/2020 10:21:19] "[37mPOST /handleBlock HTTP/1.1[0m" 200 -
+127.0.0.1 - - [04/Jun/2020 10:21:19] "[37mPOST /handleBlock HTTP/1.1[0m" 200 -
+127.0.0.1 - - [04/Jun/2020 10:21:19] "[37mPOST /handleBlock HTTP/1.1[0m" 200 -
+127.0.0.1 - - [04/Jun/2020 10:21:19] "[37mPOST /handleBlock HTTP/1.1[0m" 200 -
+127.0.0.1 - - [04/Jun/2020 10:21:19] "[37mPOST /handleBlock HTTP/1.1[0m" 200 -
+127.0.0.1 - - [04/Jun/2020 10:21:19] "[37mPOST /handleTrans HTTP/1.1[0m" 200 -
+127.0.0.1 - - [04/Jun/2020 10:21:30] "[37mPOST /handleBlock HTTP/1.1[0m" 200 -
+127.0.0.1 - - [04/Jun/2020 10:27:39] "[37mPOST /handleBlock HTTP/1.1[0m" 200 -
+127.0.0.1 - - [04/Jun/2020 10:27:39] "[37mPOST /handleBlock HTTP/1.1[0m" 200 -
+127.0.0.1 - - [04/Jun/2020 10:27:39] "[37mPOST /handleBlock HTTP/1.1[0m" 200 -
+127.0.0.1 - - [04/Jun/2020 10:27:39] "[37mPOST /handleBlock HTTP/1.1[0m" 200 -
+127.0.0.1 - - [04/Jun/2020 10:27:39] "[37mPOST /handleBlock HTTP/1.1[0m" 200 -
+127.0.0.1 - - [04/Jun/2020 10:27:39] "[37mPOST /handleTrans HTTP/1.1[0m" 200 -
+127.0.0.1 - - [04/Jun/2020 10:27:39] "[37mGET / HTTP/1.1[0m" 200 -
+127.0.0.1 - - [04/Jun/2020 10:27:43] "[37mPOST /handleBlock HTTP/1.1[0m" 200 -
